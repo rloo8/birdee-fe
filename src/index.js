@@ -43,6 +43,8 @@ footer, header, hgroup, main, menu, nav, section {
 }
 body {
   line-height: 1;
+  overflow: hidden;
+
 }
 menu, ol, ul {
   list-style: none;

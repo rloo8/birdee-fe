@@ -4,11 +4,13 @@ import styled from "styled-components";
 
 // styled components
 const Wrapper = styled.div`
-  width: 100%;
-  height: 100%;
   display: flex;
   justify-content: space-between;
   padding: 30px;
+  height: 100vh;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const BtnWrapper = styled.div`
@@ -35,8 +37,6 @@ const StrokeBtn = styled.button`
   border: 2px solid #4d9cd0;
 `;
 const ContentBox = styled.div`
-  background-color: #fff;
-  border: 2px solid #4d9cd0;
   width: 80%;
 `;
 
@@ -45,6 +45,11 @@ const DiaryBox = styled.div`
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 70px;
   padding: 100px;
+  background-color: #fff;
+  border: 2px solid #4d9cd0;
+
+  overflow-y: auto;
+  height: 100%;
 `;
 
 const Diary = styled.div`
@@ -203,7 +208,7 @@ function Home() {
       </BtnWrapper>
 
       <ContentBox>
-        <h1 className="text-5xl p-[20px]">cat 1</h1>
+        <h1 className="text-5xl pb-[20px]">cat 1</h1>
         <DiaryBox>
           {[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map(
             (_, i) => (
@@ -247,6 +252,7 @@ function Home() {
           )}
         </DiaryBox>
       </ContentBox>
+
       {showModal ? (
         <ModalBox>
           <h3>alert</h3>

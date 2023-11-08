@@ -5,7 +5,7 @@ import CreateDiary from "./Routes/CreateDiary";
 
 function App() {
   return (
-    <div className="App">
+    <div className="App" style={{ height: "100vh" }}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />}></Route>
