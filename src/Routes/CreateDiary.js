@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { boxStyle, btnStyle } from "../styles/commonStyles";
+import { useState } from "react";
 
 // styled components
 const Wrapper = styled.div`
@@ -71,18 +72,28 @@ const CreateBtn = styled.button`
 `;
 
 function CreateDiary() {
+  const [diaryColor, setDiaryColor] = useState(0);
+  const handleColorChange = (event) => {
+    setDiaryColor(event.target.value);
+  };
+
   return (
     <Wrapper>
       <CustomBox>
         <ColorSelectBox>
           {["#EDECE8", "#E4DBA4", "#BAC7AF", "#EACFCB", "#AACAD1"].map(
             (color, i) => (
-              <Color key={i} style={{ background: color }}></Color>
+              <Color
+                key={i}
+                style={{ background: color }}
+                onClick={handleColorChange}
+                value={i}
+              ></Color>
             )
           )}
         </ColorSelectBox>
         <DiaryBox>
-          <DiaryCover src="/image/b.png" alt="diary" />
+          <DiaryCover src={`/image/${diaryColor}.png`} alt="diary" />
           <DiaryTitleInput type="text" placeholder="일기장 이름" />
           <UserInviteBtn>친구 초대</UserInviteBtn>
         </DiaryBox>
