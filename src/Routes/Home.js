@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import {
+  boxStyle,
+  btnStyle,
+  modalBoxStyle,
+  solidBtnStyle,
+  stokeBtnStyle,
+} from "../styles/commonStyles";
 
 // styled components
 const Wrapper = styled.div`
@@ -24,8 +31,7 @@ const SolidBtn = styled.button`
   align-items: center;
   width: 60px;
   height: 60px;
-  background-color: #4d9cd0;
-  border: 2px solid #4d9cd0;
+  ${solidBtnStyle}
 `;
 const StrokeBtn = styled.button`
   display: flex;
@@ -33,9 +39,9 @@ const StrokeBtn = styled.button`
   align-items: center;
   width: 60px;
   height: 60px;
-  background-color: #fff;
-  border: 2px solid #4d9cd0;
+  ${stokeBtnStyle}
 `;
+
 const ContentBox = styled.div`
   width: 80%;
 `;
@@ -45,13 +51,10 @@ const DiaryBox = styled.div`
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 70px;
   padding: 100px;
-  background-color: #fff;
-  border: 2px solid #4d9cd0;
-
+  ${boxStyle}
   overflow-y: auto;
   height: 100%;
 `;
-
 const Diary = styled.div`
   position: relative;
   width: 200px;
@@ -88,17 +91,12 @@ const ModalBox = styled.div`
   width: 800px;
   height: 400px;
   padding: 30px;
-  background-color: #edece8;
-  border-right: 10px solid #4d9cd0;
-  border-bottom: 10px solid #4d9cd0;
+  ${modalBoxStyle}
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 100;
-  h3 {
-    font-size: 50px;
-  }
   span {
     font-size: 25px;
   }
@@ -110,12 +108,7 @@ const ModalBox = styled.div`
   }
   button {
     width: 100%;
-    font-size: 30px;
-    padding: 10px 30px;
-    color: #4d9cd0;
-    background-color: #f2dd98;
-    border-right: 5px solid #4d9cd0;
-    border-bottom: 5px solid #4d9cd0;
+    ${btnStyle}
   }
 `;
 
