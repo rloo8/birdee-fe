@@ -1,6 +1,9 @@
 import styled from "styled-components";
-import { boxStyle, btnStyle } from "../styles/commonStyles";
+import { boxStyle, btnStyle, modalBoxStyle } from "../styles/commonStyles";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useRecoilState } from "recoil";
+import { inviteListState } from "../Components/atoms";
 
 // styled components
 const Wrapper = styled.div`
@@ -71,10 +74,59 @@ const CreateBtn = styled.button`
   ${btnStyle}
 `;
 
+const ModalBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 800px;
+  height: 800px;
+  padding: 30px;
+  ${modalBoxStyle}
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+`;
+const ErrorMessage = styled.p`
+  color: red;
+`;
+
 function CreateDiary() {
   const [diaryColor, setDiaryColor] = useState(0);
   const handleColorChange = (event) => {
     setDiaryColor(event.target.value);
+  };
+
+  const [showModal, setShowModal] = useState(false);
+  const [inviteList, setInviteList] = useRecoilState(inviteListState);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm();
+
+  const onCustomCheck = (data) => {
+    console.log(data);
+  };
+
+  const onAddInvite = (data) => {
+    const invitedUser = data.invitedUser;
+
+    if (invitedUser && inviteList.length < 4) {
+      setInviteList([...inviteList, invitedUser]);
+      setValue("invitedUser", "");
+    } else {
+      console.error("최대 4명까지만 초대 가능");
+    }
+  };
+  const onDeleteInvite = (index) => {
+    const updatedList = [...inviteList];
+    updatedList.splice(index, 1);
+    setInviteList(updatedList);
   };
 
   return (
@@ -94,8 +146,14 @@ function CreateDiary() {
         </ColorSelectBox>
         <DiaryBox>
           <DiaryCover src={`/image/${diaryColor}.png`} alt="diary" />
-          <DiaryTitleInput type="text" placeholder="일기장 이름" />
-          <UserInviteBtn>친구 초대</UserInviteBtn>
+          <DiaryTitleInput
+            {...register("title", { required: true })}
+            type="text"
+            placeholder="일기장 이름"
+          />
+          <UserInviteBtn onClick={() => setShowModal(true)}>
+            친구 초대
+          </UserInviteBtn>
         </DiaryBox>
       </CustomBox>
 
@@ -110,19 +168,70 @@ function CreateDiary() {
           <br />
           일기는 최대 하루에 한 편만 작성 가능합니다.
         </span>
-        <form>
+        <form onSubmit={handleSubmit(onCustomCheck)}>
           <span>일기 내용 수정, 삭제 가능 여부를 체크해주세요.</span>
           <div>
-            <input type="checkbox" id="edit" />
+            <input {...register("edit")} type="checkbox" id="edit" />
             <label htmlFor="edit">지우기 가능(일기 수정)</label>
           </div>
           <div>
-            <input type="checkbox" id="delete" />
+            <input {...register("delete")} type="checkbox" id="delete" />
             <label htmlFor="delete">찢기 가능(일기 삭제)</label>
           </div>
+          <CreateBtn>CREATE!</CreateBtn>
         </form>
-        <CreateBtn>CREATE!</CreateBtn>
+        {!showModal ? (
+          <ul>
+            <h3>초대한 친구 목록</h3>
+            {inviteList.map((user, index) => (
+              <li key={index}>{user}</li>
+            ))}
+          </ul>
+        ) : null}
       </CreateBox>
+
+      {showModal ? (
+        <ModalBox>
+          <h3>친구 초대</h3>
+          <form onSubmit={handleSubmit(onAddInvite)}>
+            <label htmlFor="invitedUser">
+              초대할 친구 아이디를 입력해주세요
+            </label>
+            <input
+              {...register("invitedUser", {
+                required: "아이디를 입력해주세요!!",
+                validate: {
+                  maxFour: (value) =>
+                    inviteList.length < 4 || "최대 4명까지만 초대 가능해요",
+                },
+              })}
+              type="text"
+              id="invitedUser"
+            />
+            <button type="submit" onClick={() => {}}>
+              추가
+            </button>
+            <ErrorMessage>{errors.invitedUser?.message}</ErrorMessage>
+          </form>
+          <ul>
+            {inviteList.map((user, index) => (
+              <li key={index}>
+                {user}
+                <button onClick={() => onDeleteInvite(index)}>삭제</button>
+              </li>
+            ))}
+          </ul>
+          <CreateBtn
+            onClick={() => {
+              setShowModal(false);
+              setValue("invitedUser", inviteList);
+              setValue("color", diaryColor);
+            }}
+          >
+            완료
+          </CreateBtn>
+        </ModalBox>
+      ) : null}
     </Wrapper>
   );
 }
