@@ -302,7 +302,7 @@ function Home() {
                 </DiaryBtn>
               ) : null}
               <DiaryTitle>{diary.title}</DiaryTitle>
-              <Link to="/diary">
+              <Link to={`/diaries/${diary.id}/pages`}>
                 <DiaryCover
                   src={`/image/${diary.color}.png`}
                   alt={diary.title}
