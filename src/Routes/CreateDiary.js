@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { boxStyle, btnStyle, modalBoxStyle } from "../styles/commonStyles";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRecoilState } from "recoil";
 import { inviteListState } from "../Components/atoms";
@@ -109,8 +109,15 @@ function CreateDiary() {
     formState: { errors },
   } = useForm();
 
-  const onCustomCheck = (data) => {
+  const onCustomCheck = async (data) => {
     console.log(data);
+    await fetch("http://localhost:3000/diaries", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
   };
 
   const onAddInvite = (data) => {
@@ -128,6 +135,8 @@ function CreateDiary() {
     updatedList.splice(index, 1);
     setInviteList(updatedList);
   };
+
+  useEffect(() => {}, []);
 
   return (
     <Wrapper>
@@ -171,11 +180,11 @@ function CreateDiary() {
         <form onSubmit={handleSubmit(onCustomCheck)}>
           <span>일기 내용 수정, 삭제 가능 여부를 체크해주세요.</span>
           <div>
-            <input {...register("edit")} type="checkbox" id="edit" />
+            <input {...register("is_editable")} type="checkbox" id="edit" />
             <label htmlFor="edit">지우기 가능(일기 수정)</label>
           </div>
           <div>
-            <input {...register("delete")} type="checkbox" id="delete" />
+            <input {...register("is_deletable")} type="checkbox" id="delete" />
             <label htmlFor="delete">찢기 가능(일기 삭제)</label>
           </div>
           <CreateBtn>CREATE!</CreateBtn>
