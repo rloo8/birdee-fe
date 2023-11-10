@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { boxStyle, btnStyle } from "../styles/commonStyles";
+import MyCalendar from "../Components/MyCalendar";
 
 // styled components
 const Wrapper = styled.div`
@@ -11,7 +12,11 @@ const Wrapper = styled.div`
     display: none;
   }
 `;
-const SideWrapper = styled.div``;
+const SideWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`;
 const WriteBtn = styled.button`
   ${btnStyle}
 `;
@@ -37,13 +42,19 @@ export default function PageList() {
   return (
     <Wrapper>
       <SideWrapper>
-        <h1 className="text-4xl">Diary 1</h1>
-        <ul>
-          <li>영은</li>
-          <li>지수</li>
-        </ul>
-        <WriteBtn>My turn! 글쓰기</WriteBtn>
+        <div className="flex flex-col gap-5">
+          <h1 className="text-5xl">Diary 1</h1>
+          <ul className="text-xl">
+            <li>영은</li>
+            <li>지수</li>
+          </ul>
+        </div>
+        <div className="flex flex-col gap-5">
+          <WriteBtn>My turn! 글쓰기</WriteBtn>
+          <MyCalendar />
+        </div>
       </SideWrapper>
+
       <PageWrapper>
         {[1, 2, 3, 4, 5, 6, 7, 8].map((page, i) => (
           <PageBox key={i}>
