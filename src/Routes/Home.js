@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import {
@@ -58,9 +58,11 @@ const DiaryBox = styled.div`
 const Diary = styled.div`
   position: relative;
   width: 200px;
+  height: 230px;
 `;
 const DiaryTitle = styled.h3`
-  font-size: 30px;
+  font-size: 20px;
+  text-align: center;
   z-index: 2;
   position: absolute;
   top: 50%;
@@ -116,6 +118,7 @@ function Home() {
   const [showHidden, setShowHidden] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [diaries, setDiaries] = useState([]);
 
   const onHiddenBtnClick = () => {
     if (showDelete) {
@@ -136,6 +139,13 @@ function Home() {
   const onDeleteDiary = () => {
     setShowModal(true);
   };
+
+  useEffect(() => {
+    fetch("http://localhost:3000/diaries")
+      .then((res) => res.json())
+      .then((json) => setDiaries(json.data))
+      .catch((error) => console.error("fetch 오류:", error));
+  }, []);
 
   return (
     <Wrapper>
@@ -177,7 +187,7 @@ function Home() {
             width="24px"
             height="24px"
             viewBox="0 0 24 24"
-            stroke-width="3.5"
+            strokeWidth="3.5"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             color="#4d9cd0"
@@ -185,30 +195,30 @@ function Home() {
             <path
               d="M19.5 16L17.0248 12.6038"
               stroke="#4d9cd0"
-              stroke-width="3.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             ></path>
             <path
               d="M12 17.5V14"
               stroke="#4d9cd0"
-              stroke-width="3.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             ></path>
             <path
               d="M4.5 16L6.96895 12.6124"
               stroke="#4d9cd0"
-              stroke-width="3.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             ></path>
             <path
               d="M3 8C6.6 16 17.4 16 21 8"
               stroke="#4d9cd0"
-              stroke-width="3.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             ></path>
           </svg>
         </StrokeBtn>
@@ -231,74 +241,75 @@ function Home() {
       <ContentBox>
         <h1 className="text-5xl pb-[20px]">cat 1</h1>
         <DiaryBox>
-          {[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map(
-            (_, i) => (
-              <Diary key={i}>
-                {showHidden ? (
-                  <DiaryBtn onClick={onHiddenDiary}>
-                    <svg
-                      width="24px"
-                      height="24px"
-                      viewBox="0 0 24 24"
-                      stroke-width="3.5"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      color="#fff"
-                    >
-                      <path
-                        d="M19.5 16L17.0248 12.6038"
-                        stroke="#fff"
-                        stroke-width="3.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      ></path>
-                      <path
-                        d="M12 17.5V14"
-                        stroke="#fff"
-                        stroke-width="3.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      ></path>
-                      <path
-                        d="M4.5 16L6.96895 12.6124"
-                        stroke="#fff"
-                        stroke-width="3.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      ></path>
-                      <path
-                        d="M3 8C6.6 16 17.4 16 21 8"
-                        stroke="#fff"
-                        stroke-width="3.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      ></path>
-                    </svg>
-                  </DiaryBtn>
-                ) : null}
-                {showDelete ? (
-                  <DiaryBtn onClick={onDeleteDiary}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="#fff"
-                      className="w-8 h-8"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </DiaryBtn>
-                ) : null}
-                <DiaryTitle>diary1</DiaryTitle>
-                <Link to="/diary">
-                  <DiaryCover src="/image/b.png" alt="diary" />
-                </Link>
-              </Diary>
-            )
-          )}
+          {diaries.map((diary) => (
+            <Diary key={diary.id}>
+              {showHidden ? (
+                <DiaryBtn onClick={onHiddenDiary}>
+                  <svg
+                    width="24px"
+                    height="24px"
+                    viewBox="0 0 24 24"
+                    strokeWidth="3.5"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    color="#fff"
+                  >
+                    <path
+                      d="M19.5 16L17.0248 12.6038"
+                      stroke="#fff"
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>
+                    <path
+                      d="M12 17.5V14"
+                      stroke="#fff"
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>
+                    <path
+                      d="M4.5 16L6.96895 12.6124"
+                      stroke="#fff"
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>
+                    <path
+                      d="M3 8C6.6 16 17.4 16 21 8"
+                      stroke="#fff"
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>
+                  </svg>
+                </DiaryBtn>
+              ) : null}
+              {showDelete ? (
+                <DiaryBtn onClick={onDeleteDiary}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="#fff"
+                    className="w-8 h-8"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </DiaryBtn>
+              ) : null}
+              <DiaryTitle>{diary.title}</DiaryTitle>
+              <Link to="/diary">
+                <DiaryCover
+                  src={`/image/${diary.color}.png`}
+                  alt={diary.title}
+                />
+              </Link>
+            </Diary>
+          ))}
         </DiaryBox>
       </ContentBox>
 
