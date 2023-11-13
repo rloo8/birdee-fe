@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { boxStyle, btnStyle } from "../styles/commonStyles";
 import MyCalendar from "../Components/MyCalendar";
+import { useRecoilState } from "recoil";
+import { inviteListState } from "../Components/atoms";
 
 // styled components
 const Wrapper = styled.div`
