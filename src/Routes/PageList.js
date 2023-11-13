@@ -1,8 +1,7 @@
 import styled from "styled-components";
 import { boxStyle, btnStyle } from "../styles/commonStyles";
 import MyCalendar from "../Components/MyCalendar";
-import { useRecoilState } from "recoil";
-import { inviteListState } from "../Components/atoms";
+import { Link } from "react-router-dom";
 
 // styled components
 const Wrapper = styled.div`
@@ -20,6 +19,7 @@ const SideWrapper = styled.div`
   justify-content: space-between;
 `;
 const WriteBtn = styled.button`
+  width: 100%;
   ${btnStyle}
 `;
 
@@ -58,7 +58,9 @@ export default function PageList() {
           </ul>
         </div>
         <div className="flex flex-col gap-5">
-          <WriteBtn>My turn! 글쓰기</WriteBtn>
+          <Link to="/diaries/:id/pages/create">
+            <WriteBtn>My turn! 글쓰기</WriteBtn>
+          </Link>
           <MyCalendar />
         </div>
       </SideWrapper>

@@ -3,6 +3,7 @@ import Home from "./Routes/Home";
 import Mypage from "./Routes/Mypage";
 import CreateDiary from "./Routes/CreateDiary";
 import PageList from "./Routes/PageList";
+import CreatePage from "./Routes/CreatePage";
 
 function App() {
   return (
@@ -13,6 +14,10 @@ function App() {
           <Route path="/mypage" element={<Mypage />}></Route>
           <Route path="/diaries/create" element={<CreateDiary />}></Route>
           <Route path="/diaries/:id/pages" element={<PageList />}></Route>
+          <Route
+            path="/diaries/:id/pages/create"
+            element={<CreatePage />}
+          ></Route>
         </Routes>
       </BrowserRouter>
     </div>
