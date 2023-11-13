@@ -166,7 +166,7 @@ function Home() {
             </svg>
           </SolidBtn>
         </Link>
-        <Link to="/create-diary">
+        <Link to="/diaries/create">
           <StrokeBtn>
             <svg
               xmlns="http://www.w3.org/2000/svg"

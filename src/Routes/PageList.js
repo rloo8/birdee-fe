@@ -24,19 +24,25 @@ const WriteBtn = styled.button`
 const PageWrapper = styled.div`
   margin-top: 40px;
   width: 70%;
-  gap: 70px;
-  padding: 100px;
-  ${boxStyle}
+  padding: 70px;
   overflow-y: auto;
   height: 100%;
+  ${boxStyle}
 `;
-
 const PageBox = styled.div`
-  border: 3px solid #000;
-  margin: 50px;
+  border: 3px solid #bac7af;
+  margin: 30px;
 `;
-const PageTitle = styled.div``;
-const PageContent = styled.div``;
+const PageTitle = styled.div`
+  display: flex;
+  justify-content: space-between;
+  background-color: #bac7af;
+  padding: 10px 20px;
+`;
+const PageContent = styled.div`
+  padding: 20px;
+  font-size: 20px;
+`;
 
 export default function PageList() {
   return (
@@ -56,9 +62,12 @@ export default function PageList() {
       </SideWrapper>
 
       <PageWrapper>
-        {[1, 2, 3, 4, 5, 6, 7, 8].map((page, i) => (
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((page, i) => (
           <PageBox key={i}>
-            <PageTitle>2020.10.10</PageTitle>
+            <PageTitle>
+              <span className="text-2xl">2020.10.10</span>
+              <span className="text-lg">영은</span>
+            </PageTitle>
             <PageContent>bla bla~~bla bla~~</PageContent>
           </PageBox>
         ))}

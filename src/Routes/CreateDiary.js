@@ -118,6 +118,7 @@ function CreateDiary() {
       },
       body: JSON.stringify(data),
     });
+    window.location.href = "/";
   };
 
   const onAddInvite = (data) => {
