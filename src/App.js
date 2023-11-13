@@ -2,9 +2,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./Routes/Home";
 import Mypage from "./Routes/Mypage";
 import CreateDiary from "./Routes/CreateDiary";
-import PageList from "./Routes/PageList";
-import CreatePage from "./Routes/CreatePage";
-import Page from "./Routes/Page";
+import PageList from "./Routes/Page/PageList";
+import CreatePage from "./Routes/Page/CreatePage";
+import Page from "./Routes/Page/Page";
 
 function App() {
   return (

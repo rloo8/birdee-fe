@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { boxStyle, btnStyle } from "../styles/commonStyles";
+import { boxStyle, btnStyle } from "../../styles/commonStyles";
 
 const Wrapper = styled.div`
   display: flex;

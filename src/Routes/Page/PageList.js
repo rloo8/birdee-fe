@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import { boxStyle, btnStyle } from "../styles/commonStyles";
-import MyCalendar from "../Components/MyCalendar";
+import { boxStyle, btnStyle } from "../../styles/commonStyles";
+import MyCalendar from "../../Components/MyCalendar";
 import { Link, useParams } from "react-router-dom";
 
 // styled components
