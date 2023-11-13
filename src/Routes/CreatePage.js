@@ -46,7 +46,7 @@ const Counter = styled.p`
 export default function CreatePage() {
   const today = new Date();
 
-  const { register, handleSubmit, setValue, watch } = useForm();
+  const { register, handleSubmit } = useForm();
   const [counter, setCounter] = useState(0);
 
   const onValid = (data) => {

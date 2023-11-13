@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { boxStyle, btnStyle } from "../styles/commonStyles";
 import MyCalendar from "../Components/MyCalendar";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 // styled components
 const Wrapper = styled.div`
@@ -47,6 +47,9 @@ const PageContent = styled.div`
 `;
 
 export default function PageList() {
+  const params = useParams();
+
+  console.log(params);
   return (
     <Wrapper>
       <SideWrapper>
@@ -58,7 +61,7 @@ export default function PageList() {
           </ul>
         </div>
         <div className="flex flex-col gap-5">
-          <Link to="/diaries/:id/pages/create">
+          <Link to={`/diaries/${params.id}/pages/create`}>
             <WriteBtn>My turn! 글쓰기</WriteBtn>
           </Link>
           <MyCalendar />
