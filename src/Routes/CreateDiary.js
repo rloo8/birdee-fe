@@ -145,8 +145,6 @@ function CreateDiary() {
     setInviteList(updatedList);
   };
 
-  useEffect(() => {}, []);
-
   return (
     <Wrapper>
       <CustomBox>
