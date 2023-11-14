@@ -6,6 +6,7 @@ import PageList from "./Routes/Page/PageList";
 import CreatePage from "./Routes/Page/CreatePage";
 import Page from "./Routes/Page/Page";
 import Login from "./Routes/Auth/Login";
+import CreateAccount from "./Routes/Auth/CreateAccount";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path="/login" element={<Login />}></Route>
+          <Route path="/create-account" element={<CreateAccount />}></Route>
           <Route path="/mypage" element={<Mypage />}></Route>
           <Route path="/diaries/create" element={<CreateDiary />}></Route>
           <Route path="/diaries/:id/pages" element={<PageList />}></Route>

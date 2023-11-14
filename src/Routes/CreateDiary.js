@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRecoilState } from "recoil";
 import { inviteListState } from "../Components/atoms";
+import { useNavigate } from "react-router";
+import axios from "axios";
 
 // styled components
 const Wrapper = styled.div`
@@ -109,16 +111,22 @@ function CreateDiary() {
     formState: { errors },
   } = useForm();
 
+  const navigate = useNavigate();
+
   const onCustomCheck = async (data) => {
-    console.log(data);
-    await fetch("http://localhost:3000/diaries", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    window.location.href = "/";
+    try {
+      const response = await axios.post("http://localhost:3000/diaries", data, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      console.log("일기장 생성 성공:", response.data);
+      navigate("/");
+    } catch (error) {
+      console.error("일기장 생성 중 오류 발생: ", error);
+    }
   };
 
   const onAddInvite = (data) => {
@@ -128,7 +136,7 @@ function CreateDiary() {
       setInviteList([...inviteList, invitedUser]);
       setValue("invitedUser", "");
     } else {
-      console.error("최대 4명까지만 초대 가능");
+      console.error("최대 3명까지만 초대 가능");
     }
   };
   const onDeleteInvite = (index) => {
@@ -136,8 +144,6 @@ function CreateDiary() {
     updatedList.splice(index, 1);
     setInviteList(updatedList);
   };
-
-  useEffect(() => {}, []);
 
   return (
     <Wrapper>
@@ -212,7 +218,7 @@ function CreateDiary() {
                 required: "아이디를 입력해주세요!!",
                 validate: {
                   maxFour: (value) =>
-                    inviteList.length < 4 || "최대 4명까지만 초대 가능해요",
+                    inviteList.length < 3 || "최대 3명까지만 초대 가능해요",
                 },
               })}
               type="text"
