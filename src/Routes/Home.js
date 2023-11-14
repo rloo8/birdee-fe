@@ -8,6 +8,7 @@ import {
   solidBtnStyle,
   stokeBtnStyle,
 } from "../styles/commonStyles";
+import axios from "axios";
 
 // styled components
 const Wrapper = styled.div`
@@ -141,10 +142,18 @@ function Home() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:3000/diaries")
-      .then((res) => res.json())
-      .then((json) => setDiaries(json.data))
-      .catch((error) => console.error("fetch 오류:", error));
+    axios
+      .get("http://localhost:3000/diaries", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((response) => {
+        setDiaries(response.data.data.Diaries);
+      })
+      .catch((error) => {
+        console.error("fetch 오류:", error);
+      });
   }, []);
 
   return (
@@ -241,7 +250,7 @@ function Home() {
       <ContentBox>
         <h1 className="text-5xl pb-[20px]">cat 1</h1>
         <DiaryBox>
-          {diaries.map((diary) => (
+          {diaries?.map((diary) => (
             <Diary key={diary.id}>
               {showHidden ? (
                 <DiaryBtn onClick={onHiddenDiary}>

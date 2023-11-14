@@ -19,7 +19,7 @@ const Wrapper = styled.div`
   gap: 50px;
 `;
 
-const LoginInput = styled.div`
+const CreateInput = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -35,7 +35,7 @@ const LoginInput = styled.div`
     }
   }
 `;
-const LoginBtn = styled.button`
+const CreateBtn = styled.button`
   ${btnStyle};
 `;
 
@@ -46,22 +46,13 @@ export default function CreateAccount() {
   const onValid = async (data) => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/auth/login",
+        "http://localhost:3000/auth/member",
         data
       );
-      // console.log(response.data);
-      if (response.data.success) {
-        const token = response.data.token;
-        console.log(response.data);
-        localStorage.setItem("token", token);
-
-        // axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        navigate("/");
-      } else {
-        alert(response.data.message);
-      }
+      console.log("계정 생성 성공: ", response.data);
+      navigate("/login");
     } catch (error) {
-      console.error("로그인 중 오류 발생:", error);
+      console.error("계정 생성 중 오류 발생: ", error);
     }
   };
 
@@ -71,34 +62,64 @@ export default function CreateAccount() {
         <h1 className="text-center text-8xl">BIRDEE</h1>
         <h2 className="text-center text-3xl">우리들의 교환일기</h2>
       </div>
-
       <form
         onSubmit={handleSubmit(onValid)}
         className="flex flex-col justify-center gap-3"
       >
-        <LoginInput>
+        <CreateInput>
           <label htmlFor="user_id">ID</label>
           <input
             {...register("user_id", { required: true })}
             id="user_id"
             type="text"
           />
-        </LoginInput>
-        <LoginInput>
+        </CreateInput>
+        <CreateInput>
+          <label htmlFor="email">EMAIL</label>
+          <input
+            {...register("email", { required: true })}
+            id="email"
+            type="email"
+          />
+        </CreateInput>
+        <CreateInput>
           <label htmlFor="password">PASSWORD</label>
           <input
             {...register("password", { required: true })}
             id="password"
             type="password"
           />
-        </LoginInput>
-        <LoginBtn>LOGIN</LoginBtn>
+        </CreateInput>
+        <CreateInput>
+          <label htmlFor="name">NAME</label>
+          <input
+            {...register("name", { required: true })}
+            id="name"
+            type="text"
+          />
+        </CreateInput>
+        <CreateInput>
+          <label htmlFor="birth">BIRTH</label>
+          <input
+            {...register("birth", { required: true })}
+            id="birth"
+            type="date"
+          />
+        </CreateInput>
+        <CreateInput>
+          <input
+            {...register("allow_random")}
+            id="allow_random"
+            type="checkbox"
+          />
+          <label htmlFor="allow_random">랜덤 초대 허용</label>
+        </CreateInput>
+        <CreateBtn>Create Account</CreateBtn>
       </form>
-
       <div className="flex gap-5 text-xl">
-        <span>계정이 없으신가요?</span>
-        <Link to="/create-account">
-          <span className="text-[#4d9cd0]">CREATE-ACCOUNT</span>
+        <span>계정이 이미 있으신가요?</span>
+        <Link to="/login">
+          <span className="text-[#4d9cd0]">LOGIN</span>
         </Link>
       </div>
     </Wrapper>
