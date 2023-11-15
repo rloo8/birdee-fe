@@ -9,6 +9,8 @@ import {
   stokeBtnStyle,
 } from "../styles/commonStyles";
 import axios from "axios";
+import { useSetRecoilState } from "recoil";
+import { inviteListState } from "../Components/atoms";
 
 // styled components
 const Wrapper = styled.div`
@@ -116,45 +118,73 @@ const ModalBox = styled.div`
 `;
 
 function Home() {
-  const [showHidden, setShowHidden] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [diaries, setDiaries] = useState([]);
+  const [showBtn, setShowBtn] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
-  const onHiddenBtnClick = () => {
-    if (showDelete) {
-      setShowDelete(false);
-    }
-    setShowHidden(!showHidden);
-  };
-  const onDeleteBtnClick = () => {
-    if (showHidden) {
-      setShowHidden(false);
-    }
-    setShowDelete(!showDelete);
-  };
+  const [selectedDiaryId, setSelectedDiaryId] = useState(null);
 
-  const onHiddenDiary = () => {
-    setShowModal(true);
-  };
-  const onDeleteDiary = () => {
-    setShowModal(true);
-  };
+  const setInviteList = useSetRecoilState(inviteListState);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/diaries", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-      .then((response) => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/diaries", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
         setDiaries(response.data.data.Diaries);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("fetch 오류:", error);
-      });
-  }, []);
+      }
+    };
+
+    fetchData();
+  }, [showModal]);
+
+  const onBtnClick = (mode) => {
+    if (showBtn === mode) {
+      setShowBtn(null);
+    } else {
+      setShowBtn(mode);
+    }
+  };
+
+  const handleYesClick = async () => {
+    try {
+      const response = await axios.put(
+        `http://localhost:3000/diaries/${selectedDiaryId}`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      const updatedDiaries = diaries.map((diary) =>
+        diary.id === selectedDiaryId
+          ? {
+              ...diary,
+              UserHasDiary: {
+                hidden: true,
+              },
+            }
+          : { ...diary }
+      );
+
+      setDiaries(updatedDiaries);
+    } catch (error) {
+      console.error("일기장 숨김 중 오류 발생:", error);
+    } finally {
+      setShowModal(false);
+      setShowBtn(null);
+      setSelectedDiaryId(null);
+    }
+  };
 
   return (
     <Wrapper>
@@ -175,7 +205,7 @@ function Home() {
             </svg>
           </SolidBtn>
         </Link>
-        <Link to="/diaries/create">
+        <Link to="/diaries/create" onClick={() => setInviteList([])}>
           <StrokeBtn>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -191,7 +221,7 @@ function Home() {
             </svg>
           </StrokeBtn>
         </Link>
-        <StrokeBtn onClick={onHiddenBtnClick}>
+        <StrokeBtn onClick={() => onBtnClick("hidden")}>
           <svg
             width="24px"
             height="24px"
@@ -231,7 +261,7 @@ function Home() {
             ></path>
           </svg>
         </StrokeBtn>
-        <StrokeBtn onClick={onDeleteBtnClick}>
+        <StrokeBtn onClick={() => onBtnClick("delete")}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -252,8 +282,13 @@ function Home() {
         <DiaryBox>
           {diaries?.map((diary) => (
             <Diary key={diary.id}>
-              {showHidden ? (
-                <DiaryBtn onClick={onHiddenDiary}>
+              {showBtn === "hidden" ? (
+                <DiaryBtn
+                  onClick={() => {
+                    setSelectedDiaryId(diary.id);
+                    setShowModal(true);
+                  }}
+                >
                   <svg
                     width="24px"
                     height="24px"
@@ -294,8 +329,13 @@ function Home() {
                   </svg>
                 </DiaryBtn>
               ) : null}
-              {showDelete ? (
-                <DiaryBtn onClick={onDeleteDiary}>
+              {showBtn === "delete" ? (
+                <DiaryBtn
+                  onClick={() => {
+                    setSelectedDiaryId(diary.id);
+                    setShowModal(true);
+                  }}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -326,23 +366,18 @@ function Home() {
         <ModalBox>
           <h3>alert</h3>
           <span>
-            {showHidden
+            {showBtn === "hidden"
               ? "일기장 숨길거니?????"
-              : showDelete
+              : showBtn === "delete"
               ? "일기장 진짜 삭제할거니??????"
               : null}
           </span>
           <div className="btnBox">
+            <button onClick={handleYesClick}>YES</button>
             <button
               onClick={() => {
                 setShowModal(false);
-              }}
-            >
-              YES
-            </button>
-            <button
-              onClick={() => {
-                setShowModal(false);
+                setSelectedDiaryId(null);
               }}
             >
               NO
