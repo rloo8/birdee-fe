@@ -115,15 +115,23 @@ function CreateDiary() {
 
   const onCustomCheck = async (data) => {
     try {
-      const response = await axios.post("http://localhost:3000/diaries", data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      if (inviteList.length !== 0) {
+        const response = await axios.post(
+          "http://localhost:3000/diaries",
+          data,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
 
-      console.log("일기장 생성 성공:", response.data);
-      navigate("/");
+        console.log("일기장 생성 성공:", response.data);
+        navigate("/");
+      } else {
+        alert("초대할 친구를 입력해주세요");
+      }
     } catch (error) {
       console.error("일기장 생성 중 오류 발생: ", error);
     }
