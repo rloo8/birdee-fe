@@ -154,31 +154,34 @@ function Home() {
 
   const handleYesClick = async () => {
     try {
-      const response = await axios.put(
-        `http://localhost:3000/diaries/${selectedDiaryId}`,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      const updatedDiaries = diaries.map((diary) =>
-        diary.id === selectedDiaryId
-          ? {
-              ...diary,
-              UserHasDiary: {
-                hidden: true,
-              },
-            }
-          : { ...diary }
-      );
-
-      setDiaries(updatedDiaries);
+      if (showBtn === "hidden") {
+        await axios.put(
+          `http://localhost:3000/diaries/${selectedDiaryId}`,
+          {},
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        console.log("숨김 성공");
+      }
+      if (showBtn === "delete") {
+        await axios.delete(
+          `http://localhost:3000/diaries/${selectedDiaryId}`,
+          {},
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        console.log("삭제 성공");
+      }
     } catch (error) {
-      console.error("일기장 숨김 중 오류 발생:", error);
+      console.error("일기장 숨김 삭제 중 오류 발생:", error);
     } finally {
       setShowModal(false);
       setShowBtn(null);
