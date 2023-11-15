@@ -1,7 +1,9 @@
 import styled from "styled-components";
 import { boxStyle, btnStyle } from "../../styles/commonStyles";
 import MyCalendar from "../../Components/MyCalendar";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 // styled components
 const Wrapper = styled.div`
@@ -26,7 +28,7 @@ const WriteBtn = styled.button`
 const PageWrapper = styled.div`
   margin-top: 40px;
   width: 70%;
-  padding: 70px;
+  padding: 30px;
   overflow-y: auto;
   height: 100%;
   ${boxStyle}
@@ -47,13 +49,51 @@ const PageContent = styled.div`
 `;
 
 export default function PageList() {
+  const [pages, setPages] = useState([]);
   const params = useParams();
+  const navigate = useNavigate();
 
-  console.log(params);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/diaries/${params.diary_id}/pages`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        console.log(response.data.data);
+        setPages(response.data.data.pages);
+      } catch (error) {
+        console.error("fetch 오류:", error);
+      }
+    };
+
+    fetchData();
+  }, [params.diary_id]);
+
   return (
     <Wrapper>
       <SideWrapper>
         <div className="flex flex-col gap-5">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            className="w-8 h-8 cursor-pointer"
+            onClick={() => navigate("/")}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+            />
+          </svg>
+
           <h1 className="text-5xl">Diary 1</h1>
           <ul className="text-xl">
             <li>영은</li>
@@ -61,7 +101,7 @@ export default function PageList() {
           </ul>
         </div>
         <div className="flex flex-col gap-5">
-          <Link to={`/diaries/${params.id}/pages/create`}>
+          <Link to={`/diaries/${params.diary_id}/pages/create`}>
             <WriteBtn>My turn! 글쓰기</WriteBtn>
           </Link>
           <MyCalendar />
@@ -69,13 +109,16 @@ export default function PageList() {
       </SideWrapper>
 
       <PageWrapper>
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((page, i) => (
-          <PageBox key={i}>
+        {pages?.map((page) => (
+          <PageBox key={page.page_id}>
             <PageTitle>
-              <span className="text-2xl">2020.10.10</span>
-              <span className="text-lg">영은</span>
+              <div>
+                <span className="text-2xl">{page.subject}</span>
+                <span className="text-xl"> (2020.10.10)</span>
+              </div>
+              <span className="text-xl">{page.name}</span>
             </PageTitle>
-            <PageContent>bla bla~~bla bla~~</PageContent>
+            <PageContent>{page.contents}</PageContent>
           </PageBox>
         ))}
       </PageWrapper>

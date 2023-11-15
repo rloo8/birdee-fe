@@ -3,6 +3,8 @@ import { boxStyle, btnStyle } from "../../styles/commonStyles";
 import moment from "moment";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import axios from "axios";
+import { useNavigate, useParams } from "react-router";
 
 const Wrapper = styled.div`
   display: flex;
@@ -49,8 +51,27 @@ export default function CreatePage() {
   const { register, handleSubmit } = useForm();
   const [counter, setCounter] = useState(0);
 
-  const onValid = (data) => {
-    console.log(data);
+  const params = useParams();
+  const navigate = useNavigate();
+
+  const onValid = async (data) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:3000/diaries/${params.diary_id}/pages`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      console.log("페이지 생성 성공:", response.data);
+      navigate(`/diaries/${params.diary_id}/pages`);
+    } catch (error) {
+      console.error("페이지 생성 중 오류 발생: ", error);
+    }
   };
 
   const handleCounterChange = (event) => {
@@ -64,7 +85,14 @@ export default function CreatePage() {
         <span className="text-3xl">
           Date: {moment(today).format("YYYY.MM.DD ddd").toUpperCase()}
         </span>
-        <WriteBtn onClick={handleSubmit(onValid)}>작성 완료</WriteBtn>
+        <div className="flex gap-5">
+          <WriteBtn onClick={handleSubmit(onValid)}>완료</WriteBtn>
+          <WriteBtn
+            onClick={() => navigate(`/diaries/${params.diary_id}/pages`)}
+          >
+            취소
+          </WriteBtn>
+        </div>
       </SideWrapper>
 
       <PageWrapper>
@@ -74,15 +102,16 @@ export default function CreatePage() {
             {...register("subject", { required: true })}
             type="text"
             id="subject"
+            placeholder="제목을 작성해주세요."
             className="w-[100%] focus:outline-none"
           />
         </PageTitle>
         <textarea
-          {...register("content", { required: true })}
+          {...register("contents", { required: true })}
           placeholder="일기를 작성해주세요."
           onChange={handleCounterChange}
           maxLength={1500}
-          className="w-[100%] h-[90%] p-5 text-lg focus:outline-none"
+          className="w-[100%] h-[90%] p-5 text-xl focus:outline-none"
         ></textarea>
         <Counter>{counter}/1500 자</Counter>
       </PageWrapper>

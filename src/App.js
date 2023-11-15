@@ -18,10 +18,13 @@ function App() {
           <Route path="/create-account" element={<CreateAccount />}></Route>
           <Route path="/mypage" element={<Mypage />}></Route>
           <Route path="/diaries/create" element={<CreateDiary />}></Route>
-          <Route path="/diaries/:id/pages" element={<PageList />}></Route>
-          <Route path="/diaries/:id/page/:page_id" element={<Page />}></Route>
+          <Route path="/diaries/:diary_id/pages" element={<PageList />}></Route>
           <Route
-            path="/diaries/:id/pages/create"
+            path="/diaries/:diary_id/page/:page_id"
+            element={<Page />}
+          ></Route>
+          <Route
+            path="/diaries/:diary_id/pages/create"
             element={<CreatePage />}
           ></Route>
         </Routes>
