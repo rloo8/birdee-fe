@@ -100,8 +100,9 @@ export default function PageList() {
 
           <h1 className="text-5xl">{diary.title}</h1>
           <ul className="text-xl">
-            <li>영은</li>
-            <li>지수</li>
+            {diary?.users?.map((user, i) => (
+              <li key={i}>{user}</li>
+            ))}
           </ul>
         </div>
         <div className="flex flex-col gap-5">

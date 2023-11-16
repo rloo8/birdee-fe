@@ -96,24 +96,20 @@ const ErrorMessage = styled.p`
 `;
 
 function CreateDiary() {
+  // 일기장 컬러 index
   const [diaryColor, setDiaryColor] = useState(0);
-  const handleColorChange = (event) => {
-    setDiaryColor(event.target.value);
-  };
 
   const [showModal, setShowModal] = useState(false);
+
+  const [invitedUser, setInvitedUser] = useState("");
   const [inviteList, setInviteList] = useRecoilState(inviteListState);
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit, setValue } = useForm();
 
   const navigate = useNavigate();
 
-  const onCustomCheck = async (data) => {
+  const onCreateClick = async (data) => {
+    console.log(data);
     try {
       if (inviteList.length !== 0) {
         const response = await axios.post(
@@ -137,12 +133,12 @@ function CreateDiary() {
     }
   };
 
-  const onAddInvite = (data) => {
-    const invitedUser = data.invitedUser;
+  const onAddInvite = (event) => {
+    event.preventDefault();
 
-    if (invitedUser && inviteList.length < 4) {
+    if (invitedUser && inviteList.length < 3) {
       setInviteList([...inviteList, invitedUser]);
-      setValue("invitedUser", "");
+      setInvitedUser("");
     } else {
       console.error("최대 3명까지만 초대 가능");
     }
@@ -162,8 +158,8 @@ function CreateDiary() {
               <Color
                 key={i}
                 style={{ background: color }}
-                onClick={handleColorChange}
                 value={i}
+                onClick={() => setDiaryColor(i)}
               ></Color>
             )
           )}
@@ -175,7 +171,12 @@ function CreateDiary() {
             type="text"
             placeholder="일기장 이름"
           />
-          <UserInviteBtn onClick={() => setShowModal(true)}>
+          <UserInviteBtn
+            onClick={() => {
+              setShowModal(true);
+              setInvitedUser("");
+            }}
+          >
             친구 초대
           </UserInviteBtn>
         </DiaryBox>
@@ -192,7 +193,7 @@ function CreateDiary() {
           <br />
           일기는 최대 하루에 한 편만 작성 가능합니다.
         </span>
-        <form onSubmit={handleSubmit(onCustomCheck)}>
+        <form onSubmit={handleSubmit(onCreateClick)}>
           <span>일기 내용 수정, 삭제 가능 여부를 체크해주세요.</span>
           <div>
             <input {...register("is_editable")} type="checkbox" id="edit" />
@@ -204,7 +205,7 @@ function CreateDiary() {
           </div>
           <CreateBtn>CREATE!</CreateBtn>
         </form>
-        {!showModal ? (
+        {inviteList.length > 0 ? (
           <ul>
             <h3>초대한 친구 목록</h3>
             {inviteList.map((user, index) => (
@@ -217,39 +218,49 @@ function CreateDiary() {
       {showModal ? (
         <ModalBox>
           <h3>친구 초대</h3>
-          <form onSubmit={handleSubmit(onAddInvite)}>
-            <label htmlFor="invitedUser">
+          <form onSubmit={onAddInvite}>
+            <label htmlFor="invitedUsers">
               초대할 친구 아이디를 입력해주세요
             </label>
             <input
-              {...register("invitedUser", {
-                required: "아이디를 입력해주세요!!",
-                validate: {
-                  maxFour: (value) =>
-                    inviteList.length < 3 || "최대 3명까지만 초대 가능해요",
-                },
-              })}
               type="text"
-              id="invitedUser"
+              id="invitedUsers"
+              value={invitedUser}
+              onChange={(e) => setInvitedUser(e.target.value)}
             />
-            <button type="submit" onClick={() => {}}>
-              추가
-            </button>
-            <ErrorMessage>{errors.invitedUser?.message}</ErrorMessage>
+            <button type="submit">추가</button>
           </form>
           <ul>
             {inviteList.map((user, index) => (
-              <li key={index}>
+              <li key={index} className="flex items-center gap-4">
                 {user}
-                <button onClick={() => onDeleteInvite(index)}>삭제</button>
+                <button onClick={() => onDeleteInvite(index)}>
+                  <svg
+                    width="24px"
+                    height="24px"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    color="#000000"
+                    strokeWidth="1.5"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M12 1.25C6.06294 1.25 1.25 6.06294 1.25 12C1.25 17.9371 6.06294 22.75 12 22.75C17.9371 22.75 22.75 17.9371 22.75 12C22.75 6.06294 17.9371 1.25 12 1.25ZM9.70164 8.64124C9.40875 8.34835 8.93388 8.34835 8.64098 8.64124C8.34809 8.93414 8.34809 9.40901 8.64098 9.7019L10.9391 12L8.64098 14.2981C8.34809 14.591 8.34809 15.0659 8.64098 15.3588C8.93388 15.6517 9.40875 15.6517 9.70164 15.3588L11.9997 13.0607L14.2978 15.3588C14.5907 15.6517 15.0656 15.6517 15.3585 15.3588C15.6514 15.0659 15.6514 14.591 15.3585 14.2981L13.0604 12L15.3585 9.7019C15.6514 9.40901 15.6514 8.93414 15.3585 8.64124C15.0656 8.34835 14.5907 8.34835 14.2978 8.64124L11.9997 10.9393L9.70164 8.64124Z"
+                      fill="#000000"
+                    ></path>
+                  </svg>
+                </button>
               </li>
             ))}
           </ul>
           <CreateBtn
             onClick={() => {
               setShowModal(false);
-              setValue("invitedUser", inviteList);
+              setValue("invitedUsers", inviteList);
               setValue("color", diaryColor);
+              console.log(inviteList);
             }}
           >
             완료
