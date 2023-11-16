@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
-import { solidBtnStyle } from "../styles/commonStyles";
+import { btnStyle, modalBoxStyle, solidBtnStyle } from "../styles/commonStyles";
 import styled from "styled-components";
+import { useState } from "react";
 
 // styled components
 const Wrapper = styled.div`
@@ -21,7 +22,34 @@ const SolidBtn = styled.button`
   ${solidBtnStyle}
 `;
 
+const ModalBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  width: 600px;
+  height: 300px;
+  padding: 30px;
+  ${modalBoxStyle}
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  .btnBox {
+    display: flex;
+    justify-content: space-between;
+    gap: 50px;
+    width: 70%;
+  }
+  button {
+    width: 100%;
+    ${btnStyle}
+  }
+`;
+
 function Mypage() {
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
 
   // 로그아웃
@@ -50,9 +78,20 @@ function Mypage() {
         <Link to="/diaries/hidden">숨긴 일기장</Link>
         <Link to="/diaries/deleted">삭제한 일기장</Link>
       </div>
-      <button onClick={handleLogout} className="text-xl">
+      <button onClick={() => setShowLogoutModal(true)} className="text-xl">
         LOGOUT
       </button>
+
+      {/* // 로그아웃 모달 */}
+      {showLogoutModal && (
+        <ModalBox>
+          <span className="text-2xl">로그아웃 하시겠습니까?</span>
+          <div className="btnBox">
+            <button onClick={handleLogout}>예</button>
+            <button onClick={() => setShowLogoutModal(false)}>아니오</button>
+          </div>
+        </ModalBox>
+      )}
     </Wrapper>
   );
 }
