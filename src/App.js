@@ -7,6 +7,8 @@ import CreatePage from "./Routes/Page/CreatePage";
 import Page from "./Routes/Page/Page";
 import Login from "./Routes/Auth/Login";
 import CreateAccount from "./Routes/Auth/CreateAccount";
+import HiddenDiary from "./Routes/Diary/HiddenDiary";
+import DeletedDiary from "./Routes/Diary/DeletedDiary";
 
 function App() {
   return (
@@ -14,10 +16,15 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />}></Route>
+          <Route path="/mypage" element={<Mypage />}></Route>
+
           <Route path="/login" element={<Login />}></Route>
           <Route path="/create-account" element={<CreateAccount />}></Route>
-          <Route path="/mypage" element={<Mypage />}></Route>
+
           <Route path="/diaries/create" element={<CreateDiary />}></Route>
+          <Route path="/diaries/hidden" element={<HiddenDiary />}></Route>
+          <Route path="/diaries/deleted" element={<DeletedDiary />}></Route>
+
           <Route path="/diaries/:diary_id/pages" element={<PageList />}></Route>
           <Route
             path="/diaries/:diary_id/pages/:page_id"

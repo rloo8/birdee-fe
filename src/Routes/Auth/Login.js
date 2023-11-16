@@ -39,7 +39,7 @@ const LoginBtn = styled.button`
   ${btnStyle};
 `;
 
-export default function CreateAccount() {
+export default function Login() {
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
 
