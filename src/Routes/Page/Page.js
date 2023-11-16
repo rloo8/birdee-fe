@@ -1,5 +1,8 @@
 import styled from "styled-components";
 import { boxStyle, btnStyle } from "../../styles/commonStyles";
+import { useParams } from "react-router";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const Wrapper = styled.div`
   display: flex;
@@ -35,6 +38,32 @@ const PageTitle = styled.div`
 `;
 
 export default function Page() {
+  const [pages, setPages] = useState([]);
+
+  const params = useParams();
+  console.log(params);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/diaries/${params.diary_id}/pages/${params.page_id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        setPages(response.data.data.pages);
+      } catch (error) {
+        console.error("fetch 오류:", error);
+      }
+    };
+
+    fetchData();
+  }, [params.page_id]);
+
   return (
     <Wrapper>
       <SideWrapper>

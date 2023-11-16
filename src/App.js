@@ -20,7 +20,7 @@ function App() {
           <Route path="/diaries/create" element={<CreateDiary />}></Route>
           <Route path="/diaries/:diary_id/pages" element={<PageList />}></Route>
           <Route
-            path="/diaries/:diary_id/page/:page_id"
+            path="/diaries/:diary_id/pages/:page_id"
             element={<Page />}
           ></Route>
           <Route

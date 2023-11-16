@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { boxStyle, btnStyle, modalBoxStyle } from "../styles/commonStyles";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRecoilState } from "recoil";
 import { inviteListState } from "../Components/atoms";

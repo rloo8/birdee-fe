@@ -49,7 +49,9 @@ const PageContent = styled.div`
 `;
 
 export default function PageList() {
+  const [diary, setDiary] = useState({});
   const [pages, setPages] = useState([]);
+
   const params = useParams();
   const navigate = useNavigate();
 
@@ -64,8 +66,9 @@ export default function PageList() {
             },
           }
         );
-        console.log(response.data.data);
-        setPages(response.data.data.pages);
+
+        setDiary(response.data.data);
+        setPages(response.data.data.pages || []);
       } catch (error) {
         console.error("fetch 오류:", error);
       }
@@ -73,6 +76,7 @@ export default function PageList() {
 
     fetchData();
   }, [params.diary_id]);
+  console.log(diary);
 
   return (
     <Wrapper>
@@ -94,7 +98,7 @@ export default function PageList() {
             />
           </svg>
 
-          <h1 className="text-5xl">Diary 1</h1>
+          <h1 className="text-5xl">{diary.title}</h1>
           <ul className="text-xl">
             <li>영은</li>
             <li>지수</li>
@@ -110,16 +114,21 @@ export default function PageList() {
 
       <PageWrapper>
         {pages?.map((page) => (
-          <PageBox key={page.page_id}>
-            <PageTitle>
-              <div>
-                <span className="text-2xl">{page.subject}</span>
-                <span className="text-xl"> (2020.10.10)</span>
-              </div>
-              <span className="text-xl">{page.name}</span>
-            </PageTitle>
-            <PageContent>{page.contents}</PageContent>
-          </PageBox>
+          <Link
+            to={`/diaries/${params.diary_id}/pages/${page.page_id}`}
+            key={page.page_id}
+          >
+            <PageBox>
+              <PageTitle>
+                <div>
+                  <span className="text-2xl">{page.subject}</span>
+                  <span className="text-xl"> (2020.10.10)</span>
+                </div>
+                <span className="text-xl">{page.name}</span>
+              </PageTitle>
+              <PageContent>{page.contents}</PageContent>
+            </PageBox>
+          </Link>
         ))}
       </PageWrapper>
     </Wrapper>
