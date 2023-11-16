@@ -38,6 +38,7 @@ function App() {
             element={<ProtectedRoute element={<Mypage />} />}
           ></Route>
 
+          {/* 로그인, 회원가입 */}
           <Route
             path="/login"
             element={<PublicRoute element={<Login />} />}
@@ -47,6 +48,7 @@ function App() {
             element={<PublicRoute element={<CreateAccount />} />}
           ></Route>
 
+          {/* 일기장 */}
           <Route
             path="/diaries/create"
             element={<ProtectedRoute element={<CreateDiary />} />}
@@ -60,6 +62,7 @@ function App() {
             element={<ProtectedRoute element={<DeletedDiary />} />}
           ></Route>
 
+          {/* 페이지 */}
           <Route
             path="/diaries/:diary_id/pages"
             element={<ProtectedRoute element={<PageList />} />}
