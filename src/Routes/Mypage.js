@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { btnStyle, modalBoxStyle, solidBtnStyle } from "../styles/commonStyles";
 import styled from "styled-components";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 // styled components
 const Wrapper = styled.div`
@@ -49,13 +50,20 @@ const ModalBox = styled.div`
 `;
 
 function Mypage() {
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(null);
   const navigate = useNavigate();
+
+  const { register, handleSubmit } = useForm();
 
   // 로그아웃
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
+  };
+
+  // 회원 탈퇴
+  const handleDeleteAccount = () => {
+    console.log("탈퇴 테스트");
   };
 
   return (
@@ -78,20 +86,47 @@ function Mypage() {
         <Link to="/diaries/hidden">숨긴 일기장</Link>
         <Link to="/diaries/deleted">삭제한 일기장</Link>
       </div>
-      <button onClick={() => setShowLogoutModal(true)} className="text-xl">
+      <button onClick={() => setShowLogoutModal("logout")} className="text-xl">
         LOGOUT
       </button>
+      <button onClick={() => setShowLogoutModal("delete")} className="text-xl">
+        회원탈퇴
+      </button>
 
-      {/* // 로그아웃 모달 */}
-      {showLogoutModal && (
+      {/* //모달창 */}
+      {showLogoutModal === "logout" ? (
         <ModalBox>
           <span className="text-2xl">로그아웃 하시겠습니까?</span>
           <div className="btnBox">
             <button onClick={handleLogout}>예</button>
-            <button onClick={() => setShowLogoutModal(false)}>아니오</button>
+            <button onClick={() => setShowLogoutModal(null)}>아니오</button>
           </div>
         </ModalBox>
-      )}
+      ) : showLogoutModal === "delete" ? (
+        <ModalBox>
+          <span className="text-3xl">정말 탈퇴하시겠습니까?</span>
+          <span className="text-lg text-center">
+            탈퇴를 원하실 경우
+            <br />
+            아래 입력창에 비밀번호를 입력하시고
+            <br />
+            탈퇴 버튼을 눌러주세요.
+          </span>
+          <form onSubmit={handleSubmit(handleDeleteAccount)}>
+            <input
+              {...register("password", {
+                required: "비밀번호를 입력해주세요",
+                validate: {},
+              })}
+              type="password"
+            />
+            <div className="btnBox">
+              <button type="submit">탈퇴</button>
+              <button onClick={() => setShowLogoutModal(null)}>취소</button>
+            </div>
+          </form>
+        </ModalBox>
+      ) : null}
     </Wrapper>
   );
 }
