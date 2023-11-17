@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router";
+import { HOST_URL } from "../../App";
 
 const Wrapper = styled.div`
   display: flex;
@@ -57,7 +58,7 @@ export default function CreatePage() {
   const onValid = async (data) => {
     try {
       const response = await axios.post(
-        `http://localhost:3000/diaries/${params.diary_id}/pages`,
+        `${HOST_URL}/diaries/${params.diary_id}/pages`,
         data,
         {
           headers: {

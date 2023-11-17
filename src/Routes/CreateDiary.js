@@ -6,6 +6,7 @@ import { useRecoilState } from "recoil";
 import { inviteListState } from "../Components/atoms";
 import { useNavigate } from "react-router";
 import axios from "axios";
+import { HOST_URL } from "../App";
 
 // styled components
 const Wrapper = styled.div`
@@ -112,16 +113,12 @@ function CreateDiary() {
     console.log(data);
     try {
       if (inviteList.length !== 0) {
-        const response = await axios.post(
-          "http://localhost:3000/diaries",
-          data,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+        const response = await axios.post(`${HOST_URL}/diaries`, data, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
 
         console.log("일기장 생성 성공:", response.data);
         navigate("/");

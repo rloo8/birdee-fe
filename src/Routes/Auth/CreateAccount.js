@@ -3,6 +3,7 @@ import { boxStyle, btnStyle } from "../../styles/commonStyles";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { HOST_URL } from "../../App";
 
 const Wrapper = styled.div`
   width: 70vw;
@@ -51,10 +52,7 @@ export default function CreateAccount() {
 
   const onValid = async (data) => {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/auth/member",
-        data
-      );
+      const response = await axios.post(`${HOST_URL}/auth/member`, data);
       console.log("계정 생성 성공: ", response.data);
       navigate("/login");
     } catch (error) {

@@ -3,6 +3,7 @@ import { boxStyle, btnStyle } from "../../styles/commonStyles";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { HOST_URL } from "../../App";
 
 const Wrapper = styled.div`
   width: 70vw;
@@ -45,10 +46,7 @@ export default function Login() {
 
   const onValid = async (data) => {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/auth/login",
-        data
-      );
+      const response = await axios.post(`${HOST_URL}/auth/login`, data);
       // console.log(response.data);
       if (response.data.success) {
         const token = response.data.token;

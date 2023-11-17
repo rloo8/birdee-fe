@@ -11,6 +11,7 @@ import {
 import axios from "axios";
 import { useSetRecoilState } from "recoil";
 import { inviteListState } from "../Components/atoms";
+import { HOST_URL } from "../App";
 
 // styled components
 const Wrapper = styled.div`
@@ -129,7 +130,7 @@ function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/diaries", {
+        const response = await axios.get(`${HOST_URL}/diaries`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -156,7 +157,7 @@ function Home() {
     try {
       if (showBtn === "hidden") {
         await axios.put(
-          `http://localhost:3000/diaries/${selectedDiaryId}`,
+          `${HOST_URL}/diaries/${selectedDiaryId}`,
           {},
           {
             headers: {
@@ -169,7 +170,7 @@ function Home() {
       }
       if (showBtn === "delete") {
         await axios.delete(
-          `http://localhost:3000/diaries/${selectedDiaryId}`,
+          `${HOST_URL}/diaries/${selectedDiaryId}`,
           {},
           {
             headers: {

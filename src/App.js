@@ -10,6 +10,8 @@ import CreateAccount from "./Routes/Auth/CreateAccount";
 import HiddenDiary from "./Routes/Diary/HiddenDiary";
 import DeletedDiary from "./Routes/Diary/DeletedDiary";
 
+export const HOST_URL = process.env.REACT_APP_HOST_URL;
+
 // 로그인한 경우에만 허용
 function ProtectedRoute({ element }) {
   const token = localStorage.getItem("token");

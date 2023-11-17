@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import moment from "moment";
+import { HOST_URL } from "../../App";
 
 // styled components
 const Wrapper = styled.div`
@@ -60,7 +61,7 @@ export default function PageList() {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/diaries/${params.diary_id}/pages`,
+          `${HOST_URL}/diaries/${params.diary_id}/pages`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
