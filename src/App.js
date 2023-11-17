@@ -9,6 +9,7 @@ import Login from "./Routes/Auth/Login";
 import CreateAccount from "./Routes/Auth/CreateAccount";
 import HiddenDiary from "./Routes/Diary/HiddenDiary";
 import DeletedDiary from "./Routes/Diary/DeletedDiary";
+import EditPage from "./Routes/Page/EditPage";
 
 export const HOST_URL = process.env.REACT_APP_HOST_URL;
 
@@ -76,6 +77,10 @@ function App() {
           <Route
             path="/diaries/:diary_id/pages/create"
             element={<ProtectedRoute element={<CreatePage />} />}
+          ></Route>
+          <Route
+            path="/diaries/:diary_id/pages/:page_id/edit"
+            element={<ProtectedRoute element={<EditPage />} />}
           ></Route>
         </Routes>
       </BrowserRouter>

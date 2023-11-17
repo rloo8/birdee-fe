@@ -6,6 +6,7 @@ import axios from "axios";
 import moment from "moment";
 import { HOST_URL } from "../../App";
 import { async } from "q";
+import { Link } from "react-router-dom";
 
 const Wrapper = styled.div`
   display: flex;
@@ -67,7 +68,7 @@ const ModalBox = styled.div`
 `;
 
 export default function Page() {
-  const [pages, setPages] = useState([]);
+  const [page, setPage] = useState([]);
   const [diary, setDiary] = useState([]);
 
   const [showModal, setShowModal] = useState(false);
@@ -87,7 +88,7 @@ export default function Page() {
             },
           }
         );
-        setPages(pageResponse.data.page);
+        setPage(pageResponse.data.page);
 
         // diary api 호출 (수정, 삭제 가능 여부)
         const diaryResponse = await axios.get(
@@ -152,12 +153,16 @@ export default function Page() {
           </svg>
           <span className="text-3xl">
             Date:{" "}
-            {moment(pages.createdAt).format("YYYY.MM.DD ddd").toUpperCase()}
+            {moment(page.createdAt).format("YYYY.MM.DD ddd").toUpperCase()}
           </span>
         </div>
 
-        <div className="flex gap-5">
-          {is_editable && <WriteBtn>수정</WriteBtn>}
+        <div className="flex flex-wrap gap-5">
+          {is_editable && (
+            <Link to="edit" className="w-full">
+              <WriteBtn>수정</WriteBtn>
+            </Link>
+          )}
           {is_deletable && (
             <WriteBtn onClick={() => setShowModal(true)}>삭제</WriteBtn>
           )}
@@ -165,9 +170,9 @@ export default function Page() {
       </SideWrapper>
 
       <PageWrapper>
-        <PageTitle>{pages.subject}</PageTitle>
+        <PageTitle>{page.subject}</PageTitle>
         <p className="w-[100%] h-[90%] p-5 text-lg focus:outline-none">
-          {pages.contents}
+          {page.contents}
         </p>
       </PageWrapper>
 

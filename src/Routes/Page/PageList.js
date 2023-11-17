@@ -109,7 +109,7 @@ export default function PageList() {
           </ul>
         </div>
         <div className="flex flex-col gap-5">
-          <Link to={`/diaries/${params.diary_id}/pages/create`}>
+          <Link to={`create`}>
             <WriteBtn>My turn! 글쓰기</WriteBtn>
           </Link>
           <MyCalendar />
