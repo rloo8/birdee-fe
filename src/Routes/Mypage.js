@@ -1,18 +1,23 @@
 import { Link, useNavigate } from "react-router-dom";
-import { btnStyle, modalBoxStyle, solidBtnStyle } from "../styles/commonStyles";
+import {
+  boxStyle,
+  btnStyle,
+  modalBoxStyle,
+  solidBtnStyle,
+} from "../styles/commonStyles";
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import axios from "axios";
+import { HOST_URL } from "../App";
 
 // styled components
 const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
+  gap: 30px;
   padding: 30px;
   height: 100vh;
-  ::-webkit-scrollbar {
-    display: none;
-  }
 `;
 const SolidBtn = styled.button`
   display: flex;
@@ -23,13 +28,43 @@ const SolidBtn = styled.button`
   ${solidBtnStyle}
 `;
 
+const BoxWrapper = styled.div`
+  width: 35vw;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  gap: 15px;
+  &:first-of-type {
+    ${boxStyle}
+  }
+`;
+
+const Box = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 15px;
+  ${boxStyle}
+  span {
+    font-size: 25px;
+    color: #4d9cd0;
+  }
+  span:nth-child(2) {
+    color: #000;
+  }
+`;
+
 const ModalBox = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  width: 600px;
-  height: 300px;
+  width: 700px;
+  height: 350px;
   padding: 30px;
   ${modalBoxStyle}
   position: absolute;
@@ -50,10 +85,62 @@ const ModalBox = styled.div`
 `;
 
 function Mypage() {
+  const [user, setUser] = useState({});
+  const [profileImg, setProfileImg] = useState(null);
   const [showLogoutModal, setShowLogoutModal] = useState(null);
+
   const navigate = useNavigate();
 
   const { register, handleSubmit } = useForm();
+
+  // 유저 정보 조회
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${HOST_URL}/auth/member`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        console.log(response.data.data);
+        setUser(response.data.data);
+      } catch (error) {
+        console.error("fetch 오류:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // 프로필 이미지 등록
+  const handleProfileImg = async (event) => {
+    const file = event.target.files[0];
+    setProfileImg(file);
+  };
+
+  const onSave = async () => {
+    try {
+      if (profileImg) {
+        const formData = new FormData();
+        formData.append("profileImg", profileImg);
+
+        const response = await axios.put(`${HOST_URL}/auth/member`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        console.log(response.data);
+      } else {
+        console.error("No image selected");
+      }
+    } catch (error) {
+      console.error("프로필 이미지 업데이트 오류:", error);
+    }
+  };
 
   // 로그아웃
   const handleLogout = () => {
@@ -82,16 +169,130 @@ function Mypage() {
         </SolidBtn>
       </Link>
 
-      <div>
-        <Link to="/diaries/hidden">숨긴 일기장</Link>
-        <Link to="/diaries/deleted">삭제한 일기장</Link>
+      <div className="flex gap-20 self-center">
+        <BoxWrapper>
+          <h2 className="text-5xl">My Profile</h2>
+          <label className="w-56 h-56 m-10 flex items-center justify-center border-2 border-dashed rounded-md border-gray-300 hover:border-[#4d9cd0] hover:text-[#4d9cd0] cursor-pointer">
+            {profileImg ? (
+              <img
+                src={URL.createObjectURL(profileImg)}
+                alt="profile"
+                className="w-48 h-48 object-cover"
+              />
+            ) : (
+              <svg
+                className="h-12 w-12"
+                stroke="currentColor"
+                fill="none"
+                viewBox="0 0 48 48"
+                aria-hidden="true"
+              >
+                <path
+                  d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            )}
+            <input
+              className="hidden"
+              name="profileImg"
+              type="file"
+              onChange={handleProfileImg}
+            />
+          </label>
+          <button onClick={onSave}>저장</button>
+          <Box>
+            <span>name</span>
+            <span>{user.name}</span>
+          </Box>
+          <Box>
+            <span>birth</span>
+            <span>{user.birth}</span>
+          </Box>
+          <Box>
+            <span>작성한 일기</span>
+            <span>{user.pages_count}</span>
+          </Box>
+        </BoxWrapper>
+
+        <BoxWrapper>
+          <Link to="/diaries/hidden" className="w-full">
+            <Box>
+              <span>숨긴 일기장</span>
+              <svg
+                width="30px"
+                height="30px"
+                viewBox="0 0 24 24"
+                strokeWidth="3.5"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                color="#4d9cd0"
+              >
+                <path
+                  d="M19.5 16L17.0248 12.6038"
+                  stroke="#4d9cd0"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                ></path>
+                <path
+                  d="M12 17.5V14"
+                  stroke="#4d9cd0"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                ></path>
+                <path
+                  d="M4.5 16L6.96895 12.6124"
+                  stroke="#4d9cd0"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                ></path>
+                <path
+                  d="M3 8C6.6 16 17.4 16 21 8"
+                  stroke="#4d9cd0"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                ></path>
+              </svg>
+            </Box>
+          </Link>
+          <Link to="/diaries/deleted" className="w-full">
+            <Box>
+              <span>삭제한 일기장</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="#4d9cd0"
+                className="w-8 h-8"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </Box>
+          </Link>
+
+          <Box
+            onClick={() => setShowLogoutModal("logout")}
+            className="cursor-pointer"
+          >
+            <span>LOGOUT</span>
+          </Box>
+          <Box
+            onClick={() => setShowLogoutModal("delete")}
+            className="cursor-pointer"
+          >
+            <span>회원탈퇴</span>
+          </Box>
+        </BoxWrapper>
       </div>
-      <button onClick={() => setShowLogoutModal("logout")} className="text-xl">
-        LOGOUT
-      </button>
-      <button onClick={() => setShowLogoutModal("delete")} className="text-xl">
-        회원탈퇴
-      </button>
 
       {/* //모달창 */}
       {showLogoutModal === "logout" ? (
