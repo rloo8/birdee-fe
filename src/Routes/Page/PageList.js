@@ -78,7 +78,6 @@ export default function PageList() {
 
     fetchData();
   }, [params.diary_id]);
-  console.log(diary);
 
   return (
     <Wrapper>
@@ -126,7 +125,7 @@ export default function PageList() {
             <PageBox>
               <PageTitle>
                 <div>
-                  <span className="text-2xl">{page.subject}</span>
+                  <span className="text-2xl">{page.subject} </span>
                   <span className="text-xl">
                     ({moment(page.created_at).format("YYYY.MM.DD")})
                   </span>
