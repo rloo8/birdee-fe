@@ -1,8 +1,9 @@
 import styled from "styled-components";
 import { boxStyle, btnStyle } from "../../styles/commonStyles";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import moment from "moment";
 
 const Wrapper = styled.div`
   display: flex;
@@ -41,7 +42,7 @@ export default function Page() {
   const [pages, setPages] = useState([]);
 
   const params = useParams();
-  console.log(params);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,8 +55,7 @@ export default function Page() {
             },
           }
         );
-
-        setPages(response.data.data.pages);
+        setPages(response.data.page);
       } catch (error) {
         console.error("fetch 오류:", error);
       }
@@ -67,7 +67,28 @@ export default function Page() {
   return (
     <Wrapper>
       <SideWrapper>
-        <span className="text-3xl">Date: 2023.10.10</span>
+        <div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            className="w-8 h-8 cursor-pointer mb-3"
+            onClick={() => navigate(`/diaries/${params.diary_id}/pages`)}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+            />
+          </svg>
+          <span className="text-3xl">
+            Date:{" "}
+            {moment(pages.createdAt).format("YYYY.MM.DD ddd").toUpperCase()}
+          </span>
+        </div>
+
         <div className="flex gap-5">
           <WriteBtn>수정</WriteBtn>
           <WriteBtn>삭제</WriteBtn>
@@ -75,20 +96,9 @@ export default function Page() {
       </SideWrapper>
 
       <PageWrapper>
-        <PageTitle>오늘의 일기</PageTitle>
+        <PageTitle>{pages.subject}</PageTitle>
         <p className="w-[100%] h-[90%] p-5 text-lg focus:outline-none">
-          오늘의 일기 오늘의 일기 오늘의 일기 오늘의 일기 오늘의 일기 오늘의
-          일기 오늘의 일기 오늘의 일기오늘의 일기오늘의 일기 오늘의 일기 오늘의
-          일기 오늘의 일기 오늘의 일기 오늘의 일기오늘의 일기 오늘의 일기 오늘의
-          일기 오늘의 일기 오늘의 일기 오늘의 일기 오늘의 일기 오늘의 일기
-          오늘의 일기 오늘의 일기 오늘의 일기오늘의 일기오늘의 일기 오늘의 일기
-          오늘의 일기 오늘의 일기 오늘의 일기 오늘의 일기오늘의 일기 오늘의 일기
-          오늘의 일기 오늘의 일기 오늘의 일기 오늘의 일기 오늘의 일기 오늘의
-          일기 오늘의 일기 오늘의 일기 오늘의 일기오늘의 일기오늘의 일기 오늘의
-          일기 오늘의 일기 오늘의 일기 오늘의 일기 오늘의 일기오늘의 일기 오늘의
-          일기 오늘의 일기 오늘의 일기 오늘의 일기 오늘의 일기 오늘의 일기
-          오늘의 일기 오늘의 일기 오늘의 일기 오늘의 일기오늘의 일기오늘의 일기
-          오늘의 일기 오늘의 일기 오늘의 일기 오늘의 일기 오늘의 일기오늘의 일기
+          {pages.contents}
         </p>
       </PageWrapper>
     </Wrapper>

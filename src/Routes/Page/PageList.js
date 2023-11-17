@@ -4,6 +4,7 @@ import MyCalendar from "../../Components/MyCalendar";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import moment from "moment";
 
 // styled components
 const Wrapper = styled.div`
@@ -68,7 +69,7 @@ export default function PageList() {
         );
 
         setDiary(response.data.data);
-        setPages(response.data.data.pages || []);
+        setPages(response.data.data.pages);
       } catch (error) {
         console.error("fetch 오류:", error);
       }
@@ -101,7 +102,9 @@ export default function PageList() {
           <h1 className="text-5xl">{diary.title}</h1>
           <ul className="text-xl">
             {diary?.users?.map((user, i) => (
-              <li key={i}>{user}</li>
+              <li key={i} className="pl-2">
+                {user}
+              </li>
             ))}
           </ul>
         </div>
@@ -123,7 +126,9 @@ export default function PageList() {
               <PageTitle>
                 <div>
                   <span className="text-2xl">{page.subject}</span>
-                  <span className="text-xl"> (2020.10.10)</span>
+                  <span className="text-xl">
+                    ({moment(page.created_at).format("YYYY.MM.DD")})
+                  </span>
                 </div>
                 <span className="text-xl">{page.name}</span>
               </PageTitle>
