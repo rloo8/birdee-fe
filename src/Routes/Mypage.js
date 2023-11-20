@@ -87,7 +87,6 @@ const ModalBox = styled.div`
 
 function Mypage() {
   const [user, setUser] = useState({});
-  const [profileImg, setProfileImg] = useState(null);
   const [showLogoutModal, setShowLogoutModal] = useState(null);
 
   const navigate = useNavigate();
@@ -106,6 +105,7 @@ function Mypage() {
         });
 
         setUser(response.data.data);
+        console.log(response.data.data);
       } catch (error) {
         console.error("fetch 오류:", error);
       }
@@ -113,34 +113,6 @@ function Mypage() {
 
     fetchData();
   }, []);
-
-  // 프로필 이미지 등록
-  const handleProfileImg = async (event) => {
-    const file = event.target.files[0];
-    setProfileImg(file);
-  };
-
-  const onSave = async () => {
-    try {
-      if (profileImg) {
-        const formData = new FormData();
-        formData.append("profileImg", profileImg);
-
-        const response = await axios.put(`${HOST_URL}/auth/member`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-
-        console.log(response.data);
-      } else {
-        console.error("No image selected");
-      }
-    } catch (error) {
-      console.error("프로필 이미지 업데이트 오류:", error);
-    }
-  };
 
   // 로그아웃
   const handleLogout = () => {
@@ -183,38 +155,21 @@ function Mypage() {
               <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
             </svg>
           </Link>
-          <h2 className="text-5xl">My Profile</h2>
-          <label className="w-56 h-56 m-10 flex items-center justify-center border-2 border-dashed rounded-md border-gray-300 hover:border-[#4d9cd0] hover:text-[#4d9cd0] cursor-pointer">
-            {profileImg ? (
-              <img
-                src={URL.createObjectURL(profileImg)}
-                alt="profile"
-                className="w-48 h-48 object-cover"
-              />
-            ) : (
-              <svg
-                className="h-12 w-12"
-                stroke="currentColor"
-                fill="none"
-                viewBox="0 0 48 48"
-                aria-hidden="true"
-              >
-                <path
-                  d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            )}
-            <input
-              className="hidden"
-              name="profileImg"
-              type="file"
-              onChange={handleProfileImg}
+          <h2 className="text-5xl mb-10">My Profile</h2>
+          {user.image ? (
+            <img
+              src={user.image}
+              alt="profile"
+              className="w-48 h-48 object-cover"
             />
-          </label>
-          <button onClick={onSave}>저장</button>
+          ) : (
+            <img
+              src={`https://stbirdee.blob.core.windows.net/images/default_profileImg.png`}
+              alt="profile"
+              className="w-48 h-48 object-cover"
+            />
+          )}
+
           <Box>
             <span>name</span>
             <span>{user.name}</span>

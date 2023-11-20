@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 import { boxStyle, solidBtnStyle } from "../styles/commonStyles";
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { HOST_URL } from "../App";
+import { useForm } from "react-hook-form";
 
 // styled components
 const Wrapper = styled.div`
@@ -26,7 +27,7 @@ const SolidBtn = styled.button`
   ${solidBtnStyle}
 `;
 
-const BoxWrapper = styled.div`
+const BoxWrapper = styled.form`
   position: relative;
   width: 50vw;
   height: 80vh;
@@ -48,12 +49,14 @@ const Box = styled.div`
   align-items: center;
   padding: 20px 15px;
   ${boxStyle}
-  span {
-    font-size: 25px;
+  font-size: 25px;
+  label {
     color: #4d9cd0;
   }
-  span:nth-child(2) {
+  input {
     color: #000;
+    outline: none;
+    text-align: right;
   }
 `;
 
@@ -61,7 +64,10 @@ export default function EditProfile() {
   const [user, setUser] = useState({});
   const [profileImg, setProfileImg] = useState(null);
 
-  // 유저 정보 조회
+  const { register, handleSubmit, watch, setValue } = useForm();
+
+  const ref = useRef();
+  // 기존 유저 정보 조회
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -73,6 +79,12 @@ export default function EditProfile() {
         });
 
         setUser(response.data.data);
+        setProfileImg(response.data.data.image);
+
+        setValue("name", response.data.data.name);
+        setValue("birth", response.data.data.birth);
+        setValue("email", response.data.data.email);
+        setValue("allow_random", response.data.data.allow_random);
       } catch (error) {
         console.error("fetch 오류:", error);
       }
@@ -81,31 +93,42 @@ export default function EditProfile() {
     fetchData();
   }, []);
 
-  // 프로필 이미지 등록
-  const handleProfileImg = async (event) => {
-    const file = event.target.files[0];
-    setProfileImg(file);
+  // console.log(profileImg);
+
+  // 프로필 이미지 변경 시
+  const handleProfileImgChange = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      const imgUrl = URL.createObjectURL(file);
+      setProfileImg(imgUrl);
+      console.log(profileImg);
+    }
   };
 
-  const onSave = async () => {
+  // 회원 정보 수정
+  const onEditProfile = async (e) => {
     try {
-      if (profileImg) {
-        const formData = new FormData();
-        formData.append("profileImg", profileImg);
+      const formData = new FormData();
 
-        const response = await axios.put(`${HOST_URL}/auth/member`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+      const imgFile = await fetch(profileImg).then((res) => res.blob());
+      formData.append("profileImg", imgFile);
 
-        console.log(response.data);
-      } else {
-        console.error("No image selected");
-      }
+      formData.append("name", watch("name"));
+      formData.append("birth", watch("birth"));
+      formData.append("email", watch("email"));
+      formData.append("allow_random", watch("allow_random"));
+
+      const response = await axios.put(`${HOST_URL}/auth/member`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      console.log("프로필 업데이트 성공:", response.data);
     } catch (error) {
-      console.error("프로필 이미지 업데이트 오류:", error);
+      console.error("프로필 업데이트 오류:", error);
     }
   };
 
@@ -129,7 +152,10 @@ export default function EditProfile() {
       </Link>
 
       <BoxWrapper>
-        <Link to="/mypage/edit" className="absolute right-5 top-5">
+        <button
+          onClick={handleSubmit(onEditProfile)}
+          className="absolute right-5 top-5"
+        >
           <svg
             width="35px"
             height="35px"
@@ -155,46 +181,50 @@ export default function EditProfile() {
               strokeWidth="1.5"
             ></path>
           </svg>
-        </Link>
+        </button>
+
         <h2 className="text-5xl">My Profile</h2>
+
         <label className="w-56 h-56 m-10 flex items-center justify-center border-2 border-dashed rounded-md border-gray-300 hover:border-[#4d9cd0] hover:text-[#4d9cd0] cursor-pointer">
           {profileImg ? (
             <img
-              src={URL.createObjectURL(profileImg)}
+              src={profileImg}
               alt="profile"
               className="w-48 h-48 object-cover"
             />
           ) : (
-            <svg
-              className="h-12 w-12"
-              stroke="currentColor"
-              fill="none"
-              viewBox="0 0 48 48"
-              aria-hidden="true"
-            >
-              <path
-                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <img
+              src={`https://stbirdee.blob.core.windows.net/images/default_profileImg.png`}
+              alt="profile"
+              className="w-48 h-48 object-cover"
+            />
           )}
           <input
             className="hidden"
-            name="profileImg"
             type="file"
-            onChange={handleProfileImg}
+            onChange={handleProfileImgChange}
           />
         </label>
-        <button onClick={onSave}>저장</button>
+
         <Box>
-          <span>name</span>
-          <span>{user.name}</span>
+          <label htmlFor="name">name</label>
+          <input {...register("name")} type="text" id="name" />
         </Box>
         <Box>
-          <span>birth</span>
-          <span>{user.birth}</span>
+          <label htmlFor="birth">birth</label>
+          <input {...register("birth")} type="date" id="birth" />
+        </Box>
+        <Box>
+          <label htmlFor="email">email</label>
+          <input {...register("email")} type="email" id="email" />
+        </Box>
+        <Box>
+          <label htmlFor="allow_random">랜덤일기 허용</label>
+          <input
+            {...register("allow_random")}
+            type="checkbox"
+            id="allow_random"
+          />
         </Box>
       </BoxWrapper>
     </Wrapper>
