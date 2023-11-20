@@ -182,6 +182,10 @@ function Mypage() {
             <span>작성한 일기</span>
             <span>{user.pages_count}</span>
           </Box>
+          <Box>
+            <span>랜덤 일기장 초대</span>
+            <span>{user.allow_random ? "허용" : "비허용"}</span>
+          </Box>
         </BoxWrapper>
 
         <BoxWrapper>

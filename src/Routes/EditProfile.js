@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { boxStyle, solidBtnStyle } from "../styles/commonStyles";
 import styled from "styled-components";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { HOST_URL } from "../App";
 import { useForm } from "react-hook-form";
@@ -65,8 +65,8 @@ export default function EditProfile() {
   const [profileImg, setProfileImg] = useState(null);
 
   const { register, handleSubmit, watch, setValue } = useForm();
+  const navigate = useNavigate();
 
-  const ref = useRef();
   // 기존 유저 정보 조회
   useEffect(() => {
     const fetchData = async () => {
@@ -93,8 +93,6 @@ export default function EditProfile() {
     fetchData();
   }, []);
 
-  // console.log(profileImg);
-
   // 프로필 이미지 변경 시
   const handleProfileImgChange = (e) => {
     const file = e.target.files[0];
@@ -102,17 +100,18 @@ export default function EditProfile() {
     if (file) {
       const imgUrl = URL.createObjectURL(file);
       setProfileImg(imgUrl);
-      console.log(profileImg);
     }
   };
 
-  // 회원 정보 수정
   const onEditProfile = async (e) => {
     try {
       const formData = new FormData();
 
-      const imgFile = await fetch(profileImg).then((res) => res.blob());
-      formData.append("profileImg", imgFile);
+      // 수정된 프로필 이미지가 있는 경우에만 업로드
+      if (profileImg && profileImg.startsWith("blob:")) {
+        const imgFile = await fetch(profileImg).then((res) => res.blob());
+        formData.append("profileImg", imgFile);
+      }
 
       formData.append("name", watch("name"));
       formData.append("birth", watch("birth"));
@@ -127,6 +126,7 @@ export default function EditProfile() {
       });
 
       console.log("프로필 업데이트 성공:", response.data);
+      navigate("/mypage");
     } catch (error) {
       console.error("프로필 업데이트 오류:", error);
     }
@@ -185,7 +185,7 @@ export default function EditProfile() {
 
         <h2 className="text-5xl">My Profile</h2>
 
-        <label className="w-56 h-56 m-10 flex items-center justify-center border-2 border-dashed rounded-md border-gray-300 hover:border-[#4d9cd0] hover:text-[#4d9cd0] cursor-pointer">
+        <label className="relative w-56 h-56 m-10 flex items-center justify-center border-2 border-dashed rounded-md border-gray-300 hover:border-[#4d9cd0] hover:text-[#4d9cd0] cursor-pointer">
           {profileImg ? (
             <img
               src={profileImg}
@@ -204,6 +204,34 @@ export default function EditProfile() {
             type="file"
             onChange={handleProfileImgChange}
           />
+
+          {/* // 삭제 버튼 */}
+          {/*  {profileImg && (
+            <button
+              className="absolute bottom-[-15px] right-[-15px]"
+              onClick={(e) => {
+                e.preventDefault();
+                setProfileImg(null);
+              }}
+            >
+              <svg
+                width="50px"
+                height="50px"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                color="#e84118"
+                strokeWidth="1.5"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M12 1.25C6.06294 1.25 1.25 6.06294 1.25 12C1.25 17.9371 6.06294 22.75 12 22.75C17.9371 22.75 22.75 17.9371 22.75 12C22.75 6.06294 17.9371 1.25 12 1.25ZM9.70164 8.64124C9.40875 8.34835 8.93388 8.34835 8.64098 8.64124C8.34809 8.93414 8.34809 9.40901 8.64098 9.7019L10.9391 12L8.64098 14.2981C8.34809 14.591 8.34809 15.0659 8.64098 15.3588C8.93388 15.6517 9.40875 15.6517 9.70164 15.3588L11.9997 13.0607L14.2978 15.3588C14.5907 15.6517 15.0656 15.6517 15.3585 15.3588C15.6514 15.0659 15.6514 14.591 15.3585 14.2981L13.0604 12L15.3585 9.7019C15.6514 9.40901 15.6514 8.93414 15.3585 8.64124C15.0656 8.34835 14.5907 8.34835 14.2978 8.64124L11.9997 10.9393L9.70164 8.64124Z"
+                  fill="#e84118"
+                ></path>
+              </svg>
+            </button>
+          )} */}
         </label>
 
         <Box>
@@ -224,6 +252,7 @@ export default function EditProfile() {
             {...register("allow_random")}
             type="checkbox"
             id="allow_random"
+            className="w-5 h-5"
           />
         </Box>
       </BoxWrapper>
