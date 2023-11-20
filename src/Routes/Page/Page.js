@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import moment from "moment";
 import { HOST_URL } from "../../App";
-import { async } from "q";
 import { Link } from "react-router-dom";
 
 const Wrapper = styled.div`

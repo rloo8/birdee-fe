@@ -311,7 +311,12 @@ export default function HiddenDiary() {
                 </DiaryBtn>
               ) : null}
               <DiaryTitle>{diary.title}</DiaryTitle>
-              <DiaryCover src={`/image/${diary.color}.png`} alt={diary.title} />
+              <Link to={`/diaries/${diary.id}/pages`}>
+                <DiaryCover
+                  src={`/image/${diary.color}.png`}
+                  alt={diary.title}
+                />
+              </Link>
             </Diary>
           ))}
         </DiaryBox>

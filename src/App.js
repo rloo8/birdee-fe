@@ -10,6 +10,7 @@ import CreateAccount from "./Routes/Auth/CreateAccount";
 import HiddenDiary from "./Routes/Diary/HiddenDiary";
 import DeletedDiary from "./Routes/Diary/DeletedDiary";
 import EditPage from "./Routes/Page/EditPage";
+import EditProfile from "./Routes/EditProfile";
 
 export const HOST_URL = process.env.REACT_APP_HOST_URL;
 
@@ -39,6 +40,10 @@ function App() {
           <Route
             path="/mypage"
             element={<ProtectedRoute element={<Mypage />} />}
+          ></Route>
+          <Route
+            path="/mypage/edit"
+            element={<ProtectedRoute element={<EditProfile />} />}
           ></Route>
 
           {/* 로그인, 회원가입 */}

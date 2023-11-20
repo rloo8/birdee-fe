@@ -1,11 +1,5 @@
 import styled from "styled-components";
-import {
-  boxStyle,
-  btnStyle,
-  modalBoxStyle,
-  solidBtnStyle,
-  stokeBtnStyle,
-} from "../../styles/commonStyles";
+import { boxStyle, solidBtnStyle } from "../../styles/commonStyles";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -34,15 +28,6 @@ const SolidBtn = styled.button`
   height: 60px;
   ${solidBtnStyle}
 `;
-const StrokeBtn = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 60px;
-  height: 60px;
-  ${stokeBtnStyle}
-`;
-
 const ContentBox = styled.div`
   width: 80%;
 `;
@@ -73,20 +58,8 @@ const DiaryTitle = styled.h3`
 const DiaryCover = styled.img`
   width: 100%;
 `;
-const DiaryBtn = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 55px;
-  height: 55px;
-  position: absolute;
-  top: -20px;
-  right: -20px;
-  background-color: #e84118;
-  border-radius: 50%;
-`;
 
-export default function HiddenDiary() {
+export default function DeletedDiary() {
   const [deletedDiaries, setDeletedDiaries] = useState([]);
 
   // 삭제한 일기장 조회
@@ -101,6 +74,7 @@ export default function HiddenDiary() {
         });
 
         setDeletedDiaries(response.data.data.deletedDiaries);
+        console.log(response.data.data.deletedDiaries);
       } catch (error) {
         console.error("fetch 오류:", error);
       }
@@ -139,7 +113,12 @@ export default function HiddenDiary() {
           {deletedDiaries?.map((diary) => (
             <Diary key={diary.id}>
               <DiaryTitle>{diary.title}</DiaryTitle>
-              <DiaryCover src={`/image/${diary.color}.png`} alt={diary.title} />
+              <Link to={`/diaries/${diary.id}/pages`}>
+                <DiaryCover
+                  src={`/image/${diary.color}.png`}
+                  alt={diary.title}
+                />
+              </Link>
             </Diary>
           ))}
         </DiaryBox>
