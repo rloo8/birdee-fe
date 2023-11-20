@@ -157,12 +157,12 @@ export default function Page() {
         </div>
 
         <div className="flex flex-wrap gap-5">
-          {is_editable && (
+          {!diary.deleted && is_editable && (
             <Link to="edit" className="w-full">
               <WriteBtn>수정</WriteBtn>
             </Link>
           )}
-          {is_deletable && (
+          {!diary.deleted && is_deletable && (
             <WriteBtn onClick={() => setShowModal(true)}>삭제</WriteBtn>
           )}
         </div>

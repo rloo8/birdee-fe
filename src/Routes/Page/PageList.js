@@ -78,6 +78,8 @@ export default function PageList() {
 
         setDiary(response.data.data);
         setPages(response.data.data.pages);
+
+        console.log(response.data.data);
       } catch (error) {
         console.error("fetch 오류:", error);
       }
@@ -114,9 +116,11 @@ export default function PageList() {
           </ul>
         </div>
         <div className="flex flex-col gap-5">
-          <Link to={`create`}>
-            <WriteBtn>My turn! 글쓰기</WriteBtn>
-          </Link>
+          {diary.deleted ? null : (
+            <Link to={`create`}>
+              <WriteBtn>My turn! 글쓰기</WriteBtn>
+            </Link>
+          )}
           <MyCalendar />
         </div>
       </SideWrapper>
