@@ -141,7 +141,11 @@ export default function PageList() {
                 </div>
                 <span className="text-xl">{page.name}</span>
               </PageTitle>
-              <PageContent>{page.contents}</PageContent>
+              <PageContent>
+                {page.contents.length > 150
+                  ? `${page.contents.slice(0, 150)}...`
+                  : page.contents}
+              </PageContent>
             </PageBox>
           </Link>
         ))}
