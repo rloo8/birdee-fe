@@ -82,8 +82,8 @@ const ModalBox = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  width: 800px;
-  height: 800px;
+  width: 700px;
+  height: 700px;
   padding: 30px;
   ${modalBoxStyle}
   position: absolute;
@@ -105,14 +105,22 @@ function CreateDiary() {
   const [invitedUser, setInvitedUser] = useState("");
   const [inviteList, setInviteList] = useRecoilState(inviteListState);
 
+  // 친구 초대 에러메시지
+  const [inviteError, setInviteError] = useState("");
+
+  // 랜덤친구 초대 state
+  const [isRandomInvited, setIsRandomInvited] = useState(false);
+
   const { register, handleSubmit, setValue } = useForm();
 
   const navigate = useNavigate();
 
+  // Create 버튼 클릭 시 post
   const onCreateClick = async (data) => {
     console.log(data);
     try {
-      if (inviteList.length !== 0) {
+      if (isRandomInvited) {
+        // 랜덤 친구 초대 체크 시
         const response = await axios.post(`${HOST_URL}/diaries`, data, {
           headers: {
             "Content-Type": "application/json",
@@ -123,27 +131,45 @@ function CreateDiary() {
         console.log("일기장 생성 성공:", response.data);
         navigate("/");
       } else {
-        alert("초대할 친구를 입력해주세요");
+        // 랜덤 친구 초대 체크하지 않은 경우
+        if (inviteList.length === 0) {
+          alert("초대할 친구를 입력해주세요");
+        } else {
+          const response = await axios.post(`${HOST_URL}/diaries`, data, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          });
+
+          console.log("일기장 생성 성공:", response.data);
+          navigate("/");
+        }
       }
     } catch (error) {
       console.error("일기장 생성 중 오류 발생: ", error);
     }
   };
 
+  // 친구 아이디 추가 버튼 클릭
   const onAddInvite = (event) => {
     event.preventDefault();
 
     if (invitedUser && inviteList.length < 3) {
       setInviteList([...inviteList, invitedUser]);
       setInvitedUser("");
+      setInviteError("");
     } else {
-      console.error("최대 3명까지만 초대 가능");
+      setInviteError("최대 3명까지만 초대 가능합니다.");
     }
   };
+
+  // 친구 아이디 삭제
   const onDeleteInvite = (index) => {
     const updatedList = [...inviteList];
     updatedList.splice(index, 1);
     setInviteList(updatedList);
+    setInviteError("");
   };
 
   return (
@@ -190,18 +216,35 @@ function CreateDiary() {
           <br />
           일기는 최대 하루에 한 편만 작성 가능합니다.
         </span>
-        <form onSubmit={handleSubmit(onCreateClick)}>
-          <span>일기 내용 수정, 삭제 가능 여부를 체크해주세요.</span>
+        <form
+          onSubmit={handleSubmit(onCreateClick)}
+          className="flex flex-col items-center gap-5"
+        >
           <div>
-            <input {...register("is_editable")} type="checkbox" id="edit" />
-            <label htmlFor="edit">지우기 가능(일기 수정)</label>
+            <span>일기 내용 수정, 삭제 가능 여부를 체크해주세요.</span>
+            <div className="flex justify-center items-center gap-3">
+              <input
+                {...register("is_editable")}
+                type="checkbox"
+                id="edit"
+                className="w-5 h-5"
+              />
+              <label htmlFor="edit">지우기 가능(일기 수정)</label>
+            </div>
+            <div className="flex justify-center items-center gap-3">
+              <input
+                {...register("is_deletable")}
+                type="checkbox"
+                id="delete"
+                className="w-5 h-5"
+              />
+              <label htmlFor="delete">찢기 가능(일기 삭제)</label>
+            </div>
           </div>
-          <div>
-            <input {...register("is_deletable")} type="checkbox" id="delete" />
-            <label htmlFor="delete">찢기 가능(일기 삭제)</label>
-          </div>
+
           <CreateBtn>CREATE!</CreateBtn>
         </form>
+
         {inviteList.length > 0 ? (
           <ul>
             <h3>초대한 친구 목록</h3>
@@ -215,43 +258,78 @@ function CreateDiary() {
       {showModal ? (
         <ModalBox>
           <h3>친구 초대</h3>
-          <form onSubmit={onAddInvite}>
-            <label htmlFor="invitedUsers">
-              초대할 친구 아이디를 입력해주세요
-            </label>
-            <input
-              type="text"
-              id="invitedUsers"
-              value={invitedUser}
-              onChange={(e) => setInvitedUser(e.target.value)}
-            />
-            <button type="submit">추가</button>
-          </form>
-          <ul>
-            {inviteList.map((user, index) => (
-              <li key={index} className="flex items-center gap-4">
-                {user}
-                <button onClick={() => onDeleteInvite(index)}>
-                  <svg
-                    width="24px"
-                    height="24px"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    color="#000000"
-                    strokeWidth="1.5"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M12 1.25C6.06294 1.25 1.25 6.06294 1.25 12C1.25 17.9371 6.06294 22.75 12 22.75C17.9371 22.75 22.75 17.9371 22.75 12C22.75 6.06294 17.9371 1.25 12 1.25ZM9.70164 8.64124C9.40875 8.34835 8.93388 8.34835 8.64098 8.64124C8.34809 8.93414 8.34809 9.40901 8.64098 9.7019L10.9391 12L8.64098 14.2981C8.34809 14.591 8.34809 15.0659 8.64098 15.3588C8.93388 15.6517 9.40875 15.6517 9.70164 15.3588L11.9997 13.0607L14.2978 15.3588C14.5907 15.6517 15.0656 15.6517 15.3585 15.3588C15.6514 15.0659 15.6514 14.591 15.3585 14.2981L13.0604 12L15.3585 9.7019C15.6514 9.40901 15.6514 8.93414 15.3585 8.64124C15.0656 8.34835 14.5907 8.34835 14.2978 8.64124L11.9997 10.9393L9.70164 8.64124Z"
-                      fill="#000000"
-                    ></path>
-                  </svg>
+          <form
+            onSubmit={onAddInvite}
+            className="flex flex-col gap-10 items-center"
+          >
+            {/* 친구 초대 입력 폼 */}
+            <div
+              className="flex flex-col gap-3 justify-center items-center"
+              style={{ display: isRandomInvited ? "none" : "" }}
+            >
+              <label htmlFor="invitedUsers" className="text-xl">
+                초대할 친구 아이디를 입력해주세요
+              </label>
+              <div className="flex gap-5">
+                <input
+                  type="text"
+                  id="invitedUsers"
+                  value={invitedUser}
+                  onChange={(e) => setInvitedUser(e.target.value)}
+                  className="p-1"
+                />
+                <button type="submit" className="text-white bg-black p-2">
+                  추가
                 </button>
-              </li>
-            ))}
-          </ul>
+              </div>
+              {inviteError && <ErrorMessage>{inviteError}</ErrorMessage>}
+            </div>
+
+            {/* 초대 친구 리스트 */}
+            <ul className="text-xl">
+              {inviteList.map((user, index) => (
+                <li key={index} className="flex items-center gap-4">
+                  {user}
+                  <button onClick={() => onDeleteInvite(index)}>
+                    <svg
+                      width="24px"
+                      height="24px"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      color="#000000"
+                      strokeWidth="1.5"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                        d="M12 1.25C6.06294 1.25 1.25 6.06294 1.25 12C1.25 17.9371 6.06294 22.75 12 22.75C17.9371 22.75 22.75 17.9371 22.75 12C22.75 6.06294 17.9371 1.25 12 1.25ZM9.70164 8.64124C9.40875 8.34835 8.93388 8.34835 8.64098 8.64124C8.34809 8.93414 8.34809 9.40901 8.64098 9.7019L10.9391 12L8.64098 14.2981C8.34809 14.591 8.34809 15.0659 8.64098 15.3588C8.93388 15.6517 9.40875 15.6517 9.70164 15.3588L11.9997 13.0607L14.2978 15.3588C14.5907 15.6517 15.0656 15.6517 15.3585 15.3588C15.6514 15.0659 15.6514 14.591 15.3585 14.2981L13.0604 12L15.3585 9.7019C15.6514 9.40901 15.6514 8.93414 15.3585 8.64124C15.0656 8.34835 14.5907 8.34835 14.2978 8.64124L11.9997 10.9393L9.70164 8.64124Z"
+                        fill="#000000"
+                      ></path>
+                    </svg>
+                  </button>
+                </li>
+              ))}
+            </ul>
+
+            {/* 랜덤 친구 초대 체크박스 */}
+            <div className="flex gap-3 items-center">
+              <input
+                {...register("is_random")}
+                type="checkbox"
+                checked={isRandomInvited}
+                onChange={() => {
+                  setIsRandomInvited(!isRandomInvited);
+                  setInvitedUser("");
+                  setInviteList([]);
+                }}
+                id="random"
+                className="w-5 h-5"
+              />
+              <label htmlFor="random">랜덤 친구와 일기 쓰기</label>
+            </div>
+          </form>
+
           <CreateBtn
             onClick={() => {
               setShowModal(false);
