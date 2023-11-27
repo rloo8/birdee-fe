@@ -116,7 +116,7 @@ export default function PageList() {
           </ul>
         </div>
         <div className="flex flex-col gap-5">
-          {diary.deleted ? null : (
+          {diary.deleted !== "undeleted" ? null : (
             <Link to={`create`}>
               <WriteBtn>My turn! 글쓰기</WriteBtn>
             </Link>

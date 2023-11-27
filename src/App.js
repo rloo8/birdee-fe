@@ -11,6 +11,7 @@ import HiddenDiary from "./Routes/Diary/HiddenDiary";
 import DeletedDiary from "./Routes/Diary/DeletedDiary";
 import EditPage from "./Routes/Page/EditPage";
 import EditProfile from "./Routes/EditProfile";
+import InviteAccept from "./Routes/Auth/InviteAccept";
 
 export const HOST_URL = process.env.REACT_APP_HOST_URL;
 
@@ -54,6 +55,12 @@ function App() {
           <Route
             path="/create-account"
             element={<PublicRoute element={<CreateAccount />} />}
+          ></Route>
+
+          {/* 초대 수락 클릭 시 */}
+          <Route
+            path="/diaries/invite"
+            element={<ProtectedRoute element={<InviteAccept />} />}
           ></Route>
 
           {/* 일기장 */}
