@@ -44,7 +44,6 @@ const PageWrapper = styled.div`
   ${boxStyle}
 `;
 const PageBox = styled.div`
-  border: 3px solid #bac7af;
   margin: 30px;
 `;
 const PageTitle = styled.div`
@@ -112,6 +111,9 @@ export default function PageList() {
   // 글쓰기 활성화 유저
   const activeUserIndex = diary?.pages?.length % diary?.users?.length;
 
+  // 컬러 배열
+  const color = ["#E4DBA4", "#BAC7AF", "#EACFCB", "#AACAD1"];
+
   return (
     <Wrapper>
       <SideWrapper>
@@ -133,12 +135,18 @@ export default function PageList() {
           <h1 className="text-5xl">{diary.title}</h1>
           <ul className="text-xl">
             {diary?.users?.map((user, index) => (
-              <li
-                key={index}
-                className="pl-2"
-                style={{ color: index === activeUserIndex ? "#000" : "#ccc" }}
-              >
+              <li key={index} className="pl-2 flex">
                 {user}
+                {index === activeUserIndex ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="#000"
+                    className="w-9 h-9"
+                  >
+                    <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
+                  </svg>
+                ) : null}
               </li>
             ))}
           </ul>
@@ -163,29 +171,34 @@ export default function PageList() {
       </SideWrapper>
 
       <PageWrapper>
-        {pages?.map((page) => (
-          <Link
-            to={`/diaries/${params.diary_id}/pages/${page.page_id}`}
-            key={page.page_id}
-          >
-            <PageBox>
-              <PageTitle>
-                <div>
-                  <span className="text-2xl">{page.subject} </span>
-                  <span className="text-xl">
-                    ({moment(page.created_at).format("YYYY.MM.DD")})
-                  </span>
-                </div>
-                <span className="text-xl">{page.name}</span>
-              </PageTitle>
-              <PageContent>
-                {page.contents.length > 150
-                  ? `${page.contents.slice(0, 150)}...`
-                  : page.contents}
-              </PageContent>
-            </PageBox>
-          </Link>
-        ))}
+        {pages?.map((page) => {
+          const userIndex = diary.users.indexOf(page.name);
+          const boxColor = color[userIndex];
+
+          return (
+            <Link
+              to={`/diaries/${params.diary_id}/pages/${page.page_id}`}
+              key={page.page_id}
+            >
+              <PageBox style={{ border: `3px solid ${boxColor}` }}>
+                <PageTitle style={{ backgroundColor: boxColor }}>
+                  <div>
+                    <span className="text-2xl">{page.subject} </span>
+                    <span className="text-xl">
+                      ({moment(page.created_at).format("YYYY.MM.DD")})
+                    </span>
+                  </div>
+                  <span className="text-xl">{page.name}</span>
+                </PageTitle>
+                <PageContent>
+                  {page.contents.length > 150
+                    ? `${page.contents.slice(0, 150)}...`
+                    : page.contents}
+                </PageContent>
+              </PageBox>
+            </Link>
+          );
+        })}
       </PageWrapper>
     </Wrapper>
   );
