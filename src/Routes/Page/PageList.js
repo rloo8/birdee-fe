@@ -62,6 +62,9 @@ export default function PageList() {
   const [diary, setDiary] = useState({});
   const [pages, setPages] = useState([]);
 
+  // 유저 정보
+  const [user, setUser] = useState({});
+
   const params = useParams();
 
   useEffect(() => {
@@ -78,8 +81,6 @@ export default function PageList() {
 
         setDiary(response.data.data);
         setPages(response.data.data.pages);
-
-        console.log(response.data.data);
       } catch (error) {
         console.error("fetch 오류:", error);
       }
@@ -87,6 +88,29 @@ export default function PageList() {
 
     fetchData();
   }, [params.diary_id]);
+
+  // 유저 정보 조회
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${HOST_URL}/auth/member`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        setUser(response.data.data);
+      } catch (error) {
+        console.error("fetch 오류:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // 글쓰기 활성화 유저
+  const activeUserIndex = diary?.pages?.length % diary?.users?.length;
 
   return (
     <Wrapper>
@@ -108,8 +132,12 @@ export default function PageList() {
 
           <h1 className="text-5xl">{diary.title}</h1>
           <ul className="text-xl">
-            {diary?.users?.map((user, i) => (
-              <li key={i} className="pl-2">
+            {diary?.users?.map((user, index) => (
+              <li
+                key={index}
+                className="pl-2"
+                style={{ color: index === activeUserIndex ? "#000" : "#ccc" }}
+              >
                 {user}
               </li>
             ))}
@@ -118,7 +146,16 @@ export default function PageList() {
         <div className="flex flex-col gap-5">
           {diary.deleted !== "undeleted" ? null : (
             <Link to={`create`}>
-              <WriteBtn>My turn! 글쓰기</WriteBtn>
+              <WriteBtn
+                style={{
+                  display:
+                    user.name === diary.users[activeUserIndex]
+                      ? "inline-block"
+                      : "none",
+                }}
+              >
+                My turn! 글쓰기
+              </WriteBtn>
             </Link>
           )}
           <MyCalendar />
