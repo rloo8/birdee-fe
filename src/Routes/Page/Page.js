@@ -69,6 +69,7 @@ const ModalBox = styled.div`
 export default function Page() {
   const [page, setPage] = useState([]);
   const [diary, setDiary] = useState([]);
+  const [user, setUser] = useState({});
 
   const [showModal, setShowModal] = useState(false);
 
@@ -78,6 +79,17 @@ export default function Page() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // user 정보 조회
+        const userResponse = await axios.get(`${HOST_URL}/auth/member`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        setUser(userResponse.data.data);
+        console.log("user: ", userResponse.data.data.name);
+
         // page api 호출
         const pageResponse = await axios.get(
           `${HOST_URL}/diaries/${params.diary_id}/pages/${params.page_id}`,
@@ -88,6 +100,7 @@ export default function Page() {
           }
         );
         setPage(pageResponse.data.page);
+        console.log("pageUser: ", pageResponse.data.page.User.name);
 
         // diary api 호출 (수정, 삭제 가능 여부)
         const diaryResponse = await axios.get(
@@ -156,16 +169,18 @@ export default function Page() {
           </span>
         </div>
 
-        <div className="flex flex-wrap gap-5">
-          {!diary.deleted && is_editable && (
-            <Link to="edit" className="w-full">
-              <WriteBtn>수정</WriteBtn>
-            </Link>
-          )}
-          {!diary.deleted && is_deletable && (
-            <WriteBtn onClick={() => setShowModal(true)}>삭제</WriteBtn>
-          )}
-        </div>
+        {user.name === page.User?.name && (
+          <div className="flex flex-wrap gap-5">
+            {diary.deleted !== "undeleted" && is_editable && (
+              <Link to="edit" className="w-full">
+                <WriteBtn>수정</WriteBtn>
+              </Link>
+            )}
+            {diary.deleted !== "undeleted" && is_deletable && (
+              <WriteBtn onClick={() => setShowModal(true)}>삭제</WriteBtn>
+            )}
+          </div>
+        )}
       </SideWrapper>
 
       <PageWrapper>

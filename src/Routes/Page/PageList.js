@@ -79,6 +79,7 @@ export default function PageList() {
         );
 
         setDiary(response.data.data);
+        console.log(response.data.data);
         setPages(response.data.data.pages);
       } catch (error) {
         console.error("fetch 오류:", error);
@@ -136,7 +137,7 @@ export default function PageList() {
           <ul className="text-xl">
             {diary?.users?.map((user, index) => (
               <li key={index} className="pl-2 flex">
-                {user}
+                {user.name}
                 {index === activeUserIndex ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -172,7 +173,9 @@ export default function PageList() {
 
       <PageWrapper>
         {pages?.map((page) => {
-          const userIndex = diary.users.indexOf(page.name);
+          const userIndex = diary.users.findIndex(
+            (user) => user.user_id === page.user_id
+          );
           const boxColor = color[userIndex];
 
           return (
