@@ -91,7 +91,6 @@ export default function Page() {
         });
 
         setUser(userResponse.data.data);
-        console.log("user: ", userResponse.data.data.name);
 
         // page api 호출
         const pageResponse = await axios.get(
@@ -103,7 +102,6 @@ export default function Page() {
           }
         );
         setPage(pageResponse.data.page);
-        console.log("pageUser: ", pageResponse.data.page.User.name);
 
         // diary api 호출 (수정, 삭제 가능 여부)
         const diaryResponse = await axios.get(

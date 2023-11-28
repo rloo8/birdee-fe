@@ -47,7 +47,6 @@ const Counter = styled.p`
 `;
 
 export default function EditPage() {
-  const today = new Date();
   const [page, setPage] = useState();
 
   const { register, handleSubmit, setValue } = useForm({ mode: "onChange" });
@@ -96,7 +95,7 @@ export default function EditPage() {
       );
 
       console.log("페이지 수정 성공:", response.data);
-      navigate(`/diaries/${params.diary_id}/pages`);
+      navigate(`/diaries/${params.diary_id}/pages/${params.page_id}`);
     } catch (error) {
       console.error("페이지 수정 중 오류 발생: ", error);
     }
@@ -111,7 +110,7 @@ export default function EditPage() {
     <Wrapper>
       <SideWrapper>
         <span className="text-3xl">
-          Date: {moment(page).format("YYYY.MM.DD ddd").toUpperCase()}
+          Date: {moment(page?.createdAt).format("YYYY.MM.DD ddd").toUpperCase()}
         </span>
         <div className="flex gap-5">
           <WriteBtn onClick={handleSubmit(onValid)}>수정</WriteBtn>
