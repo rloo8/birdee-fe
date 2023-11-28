@@ -67,6 +67,9 @@ const ModalBox = styled.div`
 `;
 
 export default function Page() {
+  // 로딩 state
+  const [isLoading, setIsLoading] = useState(true);
+
   const [page, setPage] = useState([]);
   const [diary, setDiary] = useState([]);
   const [user, setUser] = useState({});
@@ -112,8 +115,11 @@ export default function Page() {
           }
         );
         setDiary(diaryResponse.data.data);
+
+        setIsLoading(false);
       } catch (error) {
         console.error("fetch 오류:", error);
+        setIsLoading(false);
       }
     };
 
@@ -169,14 +175,14 @@ export default function Page() {
           </span>
         </div>
 
-        {user.name === page.User?.name && (
+        {!isLoading && user.name === page.User.name && (
           <div className="flex flex-wrap gap-5">
-            {diary.deleted !== "undeleted" && is_editable && (
+            {diary.deleted === "undeleted" && is_editable && (
               <Link to="edit" className="w-full">
                 <WriteBtn>수정</WriteBtn>
               </Link>
             )}
-            {diary.deleted !== "undeleted" && is_deletable && (
+            {diary.deleted === "undeleted" && is_deletable && (
               <WriteBtn onClick={() => setShowModal(true)}>삭제</WriteBtn>
             )}
           </div>

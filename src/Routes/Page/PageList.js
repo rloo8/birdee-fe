@@ -61,11 +61,12 @@ export default function PageList() {
   const [diary, setDiary] = useState({});
   const [pages, setPages] = useState([]);
 
-  // 유저 정보
+  // 유저 정보 state
   const [user, setUser] = useState({});
 
   const params = useParams();
 
+  // 다이어리 정보 조회
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -101,6 +102,7 @@ export default function PageList() {
         });
 
         setUser(response.data.data);
+        console.log(response.data.data);
       } catch (error) {
         console.error("fetch 오류:", error);
       }
@@ -137,8 +139,12 @@ export default function PageList() {
           <ul className="text-xl">
             {diary?.users?.map((user, index) => (
               <li key={index} className="pl-2 flex">
-                {user.name}
-                {index === activeUserIndex ? (
+                <span
+                  className={user.status === "pending" ? "text-gray-400" : null}
+                >
+                  {user.name}
+                </span>
+                {index === activeUserIndex && user.status === "accept" ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -158,7 +164,7 @@ export default function PageList() {
               <WriteBtn
                 style={{
                   display:
-                    user.name === diary.users[activeUserIndex]
+                    user.name === diary.users[activeUserIndex].name
                       ? "inline-block"
                       : "none",
                 }}
