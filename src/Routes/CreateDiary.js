@@ -152,15 +152,24 @@ function CreateDiary() {
   };
 
   // 친구 아이디 추가 버튼 클릭
-  const onAddInvite = (event) => {
-    event.preventDefault();
+  const onAddInvite = async (e) => {
+    e.preventDefault();
 
-    if (invitedUser && inviteList.length < 3) {
-      setInviteList([...inviteList, invitedUser]);
-      setInvitedUser("");
-      setInviteError("");
+    // 존재하는 아이디인지 체크
+    const response = await axios.post(`${HOST_URL}/auth/check-user`, {
+      user_id: invitedUser,
+    });
+
+    if (response.data.success) {
+      if (invitedUser && inviteList.length < 3) {
+        setInviteList([...inviteList, invitedUser]);
+        setInvitedUser("");
+        setInviteError("");
+      } else {
+        setInviteError("최대 3명까지만 초대 가능합니다.");
+      }
     } else {
-      setInviteError("최대 3명까지만 초대 가능합니다.");
+      setInviteError("존재하지 않는 아이디입니다.");
     }
   };
 
