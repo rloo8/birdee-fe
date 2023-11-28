@@ -1,8 +1,11 @@
+import axios from "axios";
 import moment from "moment/moment";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
+import { HOST_URL } from "../App";
 
 const CalendarContainer = styled.div`
   .react-calendar {
@@ -23,6 +26,14 @@ const CalendarContainer = styled.div`
     }
   }
 
+  .react-calendar button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+  }
+
   .react-calendar__navigation button:disabled {
     background-color: #4d9cd0;
   }
@@ -41,9 +52,42 @@ const Dot = styled.div`
 `;
 
 function MyCalendar() {
-  const [date, setDate] = useState(new Date());
-  const uploadDates = ["2023-11-01", "2023-11-03", "2023-11-05", "2023-11-11"];
+  const [pages, setPages] = useState([]);
+  const [uploadDates, setUploadDates] = useState([]);
 
+  const params = useParams();
+
+  // 다이어리 정보 조회
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${HOST_URL}/diaries/${params.diary_id}/pages`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        setPages(response.data.data.pages);
+
+        // 페이지 업로드 날짜 배열
+        const extractedUploadDates = response.data.data.pages.map((page) =>
+          moment(page.created_at).format("YYYY-MM-DD")
+        );
+        setUploadDates(extractedUploadDates);
+      } catch (error) {
+        console.error("fetch 오류:", error);
+      }
+    };
+
+    fetchData();
+  }, [params.diary_id]);
+
+  const [date, setDate] = useState(new Date());
+
+  // 업로드 날짜 확인 후, 캘린더에 dot 표시
   const uploadContent = ({ date }) => {
     const formatDate = moment(date).format("YYYY-MM-DD");
 
@@ -64,7 +108,6 @@ function MyCalendar() {
         prev2Label={null}
         showNeighboringMonth={false}
       />
-      {/* {moment(date).format("YYYY년 MM월 DD일")} */}
     </CalendarContainer>
   );
 }
