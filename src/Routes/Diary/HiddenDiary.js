@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import styled from "styled-components";
 import {
   boxStyle,
@@ -7,11 +5,11 @@ import {
   modalBoxStyle,
   solidBtnStyle,
   stokeBtnStyle,
-} from "../styles/commonStyles";
+} from "../../styles/commonStyles";
+import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { useSetRecoilState } from "recoil";
-import { inviteListState } from "../Components/atoms";
-import { HOST_URL } from "../App";
+import { HOST_URL } from "../../App";
 
 // styled components
 const Wrapper = styled.div`
@@ -23,7 +21,6 @@ const Wrapper = styled.div`
     display: none;
   }
 `;
-
 const BtnWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -118,33 +115,14 @@ const ModalBox = styled.div`
   }
 `;
 
-function Home() {
-  const [diaries, setDiaries] = useState([]);
+export default function HiddenDiary() {
+  const [hiddenDiaries, setHiddenDiaries] = useState([]);
+
   const [showBtn, setShowBtn] = useState(null);
+  const [selectedDiaryId, setSelectedDiaryId] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  const [selectedDiaryId, setSelectedDiaryId] = useState(null);
-
-  const setInviteList = useSetRecoilState(inviteListState);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${HOST_URL}/diaries`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-
-        setDiaries(response.data.data.Diaries);
-      } catch (error) {
-        console.error("fetch 오류:", error);
-      }
-    };
-
-    fetchData();
-  }, [showModal]);
-
+  // 숨김해제, 삭제 버튼 클릭 시
   const onBtnClick = (mode) => {
     if (showBtn === mode) {
       setShowBtn(null);
@@ -152,10 +130,9 @@ function Home() {
       setShowBtn(mode);
     }
   };
-
   const handleYesClick = async () => {
     try {
-      if (showBtn === "hidden") {
+      if (showBtn === "notHidden") {
         await axios.put(
           `${HOST_URL}/diaries/${selectedDiaryId}`,
           {},
@@ -166,7 +143,7 @@ function Home() {
             },
           }
         );
-        console.log("숨김 성공");
+        console.log("숨김 해제 성공");
       }
       if (showBtn === "delete") {
         await axios.delete(
@@ -190,6 +167,26 @@ function Home() {
     }
   };
 
+  // 숨긴 일기장 조회
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${HOST_URL}/auth/member`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        setHiddenDiaries(response.data.data.hiddenDiaries);
+      } catch (error) {
+        console.error("fetch 오류:", error);
+      }
+    };
+
+    fetchData();
+  }, [showModal]);
+
   return (
     <Wrapper>
       <BtnWrapper>
@@ -209,57 +206,29 @@ function Home() {
             </svg>
           </SolidBtn>
         </Link>
-        <Link to="/diaries/create" onClick={() => setInviteList([])}>
-          <StrokeBtn>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="#4d9cd0"
-              className="w-8 h-8"
-            >
-              <path
-                fillRule="evenodd"
-                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </StrokeBtn>
-        </Link>
-        <StrokeBtn onClick={() => onBtnClick("hidden")}>
+
+        <StrokeBtn onClick={() => onBtnClick("notHidden")}>
           <svg
-            width="24px"
-            height="24px"
+            width="30px"
+            height="30px"
             viewBox="0 0 24 24"
-            strokeWidth="3.5"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             color="#4d9cd0"
+            strokeWidth="2"
           >
             <path
-              d="M19.5 16L17.0248 12.6038"
+              d="M3 13C6.6 5 17.4 5 21 13"
               stroke="#4d9cd0"
-              strokeWidth="3.5"
+              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             ></path>
             <path
-              d="M12 17.5V14"
+              d="M12 17C10.3431 17 9 15.6569 9 14C9 12.3431 10.3431 11 12 11C13.6569 11 15 12.3431 15 14C15 15.6569 13.6569 17 12 17Z"
+              fill="#4d9cd0"
               stroke="#4d9cd0"
-              strokeWidth="3.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            ></path>
-            <path
-              d="M4.5 16L6.96895 12.6124"
-              stroke="#4d9cd0"
-              strokeWidth="3.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            ></path>
-            <path
-              d="M3 8C6.6 16 17.4 16 21 8"
-              stroke="#4d9cd0"
-              strokeWidth="3.5"
+              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             ></path>
@@ -282,11 +251,11 @@ function Home() {
       </BtnWrapper>
 
       <ContentBox>
-        <h1 className="text-5xl pb-[20px]">cat 1</h1>
+        <h1 className="text-5xl pb-[20px]">숨긴 일기장</h1>
         <DiaryBox>
-          {diaries?.map((diary) => (
+          {hiddenDiaries?.map((diary) => (
             <Diary key={diary.id}>
-              {showBtn === "hidden" ? (
+              {showBtn === "notHidden" ? (
                 <DiaryBtn
                   onClick={() => {
                     setSelectedDiaryId(diary.id);
@@ -294,39 +263,26 @@ function Home() {
                   }}
                 >
                   <svg
-                    width="24px"
-                    height="24px"
+                    width="30px"
+                    height="30px"
                     viewBox="0 0 24 24"
-                    strokeWidth="3.5"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                     color="#fff"
+                    strokeWidth="2"
                   >
                     <path
-                      d="M19.5 16L17.0248 12.6038"
+                      d="M3 13C6.6 5 17.4 5 21 13"
                       stroke="#fff"
-                      strokeWidth="3.5"
+                      strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     ></path>
                     <path
-                      d="M12 17.5V14"
+                      d="M12 17C10.3431 17 9 15.6569 9 14C9 12.3431 10.3431 11 12 11C13.6569 11 15 12.3431 15 14C15 15.6569 13.6569 17 12 17Z"
+                      fill="#fff"
                       stroke="#fff"
-                      strokeWidth="3.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    ></path>
-                    <path
-                      d="M4.5 16L6.96895 12.6124"
-                      stroke="#fff"
-                      strokeWidth="3.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    ></path>
-                    <path
-                      d="M3 8C6.6 16 17.4 16 21 8"
-                      stroke="#fff"
-                      strokeWidth="3.5"
+                      strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     ></path>
@@ -370,8 +326,8 @@ function Home() {
         <ModalBox>
           <h3>alert</h3>
           <span>
-            {showBtn === "hidden"
-              ? "일기장 숨길거니?????"
+            {showBtn === "notHidden"
+              ? "일기장 숨김해제 할거니?????"
               : showBtn === "delete"
               ? "일기장 진짜 삭제할거니??????"
               : null}
@@ -392,5 +348,3 @@ function Home() {
     </Wrapper>
   );
 }
-
-export default Home;

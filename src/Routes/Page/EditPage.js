@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { boxStyle, btnStyle } from "../../styles/commonStyles";
 import moment from "moment";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router";
 import { HOST_URL } from "../../App";
@@ -46,19 +46,45 @@ const Counter = styled.p`
   text-align: right;
 `;
 
-export default function CreatePage() {
-  const today = new Date();
+export default function EditPage() {
+  const [page, setPage] = useState();
 
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, setValue } = useForm({ mode: "onChange" });
   const [counter, setCounter] = useState(0);
 
   const params = useParams();
   const navigate = useNavigate();
 
+  // 기존 페이지 get
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const pageResponse = await axios.get(
+          `${HOST_URL}/diaries/${params.diary_id}/pages/${params.page_id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        setPage(pageResponse.data.page);
+        setCounter(pageResponse.data.page.contents.length);
+
+        setValue("subject", pageResponse.data.page.subject);
+        setValue("contents", pageResponse.data.page.contents);
+      } catch (error) {
+        console.error("페이지 불러오기 중 오류 발생: ", error);
+      }
+    };
+
+    fetchData();
+  }, [params.page_id]);
+
+  // 페이지 수정
   const onValid = async (data) => {
     try {
-      const response = await axios.post(
-        `${HOST_URL}/diaries/${params.diary_id}/pages`,
+      const response = await axios.put(
+        `${HOST_URL}/diaries/${params.diary_id}/pages/${params.page_id}`,
         data,
         {
           headers: {
@@ -68,10 +94,10 @@ export default function CreatePage() {
         }
       );
 
-      console.log("페이지 생성 성공:", response.data);
-      navigate(`/diaries/${params.diary_id}/pages`);
+      console.log("페이지 수정 성공:", response.data);
+      navigate(`/diaries/${params.diary_id}/pages/${params.page_id}`);
     } catch (error) {
-      console.error("페이지 생성 중 오류 발생: ", error);
+      console.error("페이지 수정 중 오류 발생: ", error);
     }
   };
 
@@ -84,12 +110,14 @@ export default function CreatePage() {
     <Wrapper>
       <SideWrapper>
         <span className="text-3xl">
-          Date: {moment(today).format("YYYY.MM.DD ddd").toUpperCase()}
+          Date: {moment(page?.createdAt).format("YYYY.MM.DD ddd").toUpperCase()}
         </span>
         <div className="flex gap-5">
-          <WriteBtn onClick={handleSubmit(onValid)}>완료</WriteBtn>
+          <WriteBtn onClick={handleSubmit(onValid)}>수정</WriteBtn>
           <WriteBtn
-            onClick={() => navigate(`/diaries/${params.diary_id}/pages`)}
+            onClick={() =>
+              navigate(`/diaries/${params.diary_id}/pages/${params.page_id}`)
+            }
           >
             취소
           </WriteBtn>
