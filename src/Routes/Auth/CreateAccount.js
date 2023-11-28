@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { HOST_URL } from "../../App";
+import { useState } from "react";
 
 const Wrapper = styled.div`
   width: 70vw;
@@ -24,9 +25,10 @@ const CreateInput = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: 25px;
   color: #4d9cd0;
   font-size: 20px;
+  position: relative;
   input {
     ${boxStyle};
     padding: 10px;
@@ -37,6 +39,7 @@ const CreateInput = styled.div`
   }
 `;
 const CreateBtn = styled.button`
+  margin-top: 20px;
   ${btnStyle};
 `;
 
@@ -47,18 +50,50 @@ export default function CreateAccount() {
     watch,
     formState: { errors },
   } = useForm({ mode: "onChange" });
-  const navigate = useNavigate();
-  console.log(watch());
 
+  const navigate = useNavigate();
+
+  // 중복 아이디 검사 결과 state
+  // true면 검사 안했거나 이미 있는 아이디, false면 사용 가능 아이디
+  const [IdValidation, setIdValidation] = useState(true);
+
+  // 계정 생성
   const onValid = async (data) => {
     try {
-      const response = await axios.post(`${HOST_URL}/auth/member`, data);
-      console.log("계정 생성 성공: ", response.data);
-      navigate("/login");
+      if (!IdValidation) {
+        const response = await axios.post(`${HOST_URL}/auth/member`, data);
+
+        console.log("계정 생성 성공: ", response.data);
+        navigate("/login");
+      } else {
+        alert("아이디 중복확인을 해주세요");
+      }
     } catch (error) {
       console.error("계정 생성 중 오류 발생: ", error);
     }
   };
+
+  // 아이디 중복 확인
+  const onCheckId = async (e) => {
+    try {
+      e.preventDefault();
+
+      const response = await axios.post(`${HOST_URL}/auth/check-user`, {
+        user_id: watch("user_id"),
+      });
+      setIdValidation(response.data.success);
+
+      if (!response.data.success) {
+        alert(response.data.message);
+      } else {
+        alert(response.data.result);
+      }
+    } catch (error) {
+      console.error("아이디 중복 확인 실패: ", error);
+    }
+  };
+
+  console.log(IdValidation);
 
   return (
     <Wrapper>
@@ -68,7 +103,7 @@ export default function CreateAccount() {
       </div>
       <form
         onSubmit={handleSubmit(onValid)}
-        className="flex flex-col justify-center gap-3"
+        className="flex flex-col justify-center gap-2"
       >
         <CreateInput>
           <label htmlFor="user_id">ID</label>
@@ -77,6 +112,12 @@ export default function CreateAccount() {
             id="user_id"
             type="text"
           />
+          <button
+            onClick={onCheckId}
+            className="p-1 text-white bg-[#4d9cd0] text-lg absolute right-2"
+          >
+            중복확인
+          </button>
         </CreateInput>
         <span className="text-red-500 text-sm text-right">
           {errors?.user_id?.message}
@@ -156,12 +197,13 @@ export default function CreateAccount() {
         </span>
 
         <CreateInput>
+          <label htmlFor="allow_random">랜덤 초대 허용</label>
           <input
             {...register("allow_random")}
             id="allow_random"
             type="checkbox"
+            className="w-5 h-5"
           />
-          <label htmlFor="allow_random">랜덤 초대 허용</label>
         </CreateInput>
 
         <CreateBtn>Create Account</CreateBtn>
