@@ -26,7 +26,10 @@ const InviteAccept = () => {
         }
       );
 
-      console.log("초대수락 성공", response.data);
+      if (!response.data.success) {
+        alert(response.data.message);
+      }
+
       navigate("/");
     } catch (error) {
       console.error("초대수락 실패", error);
