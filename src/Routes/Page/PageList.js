@@ -64,6 +64,9 @@ export default function PageList() {
   // 유저 정보 state
   const [user, setUser] = useState({});
 
+  // 선택한 날짜의 페이지 id state
+  const [selectedPageId, setSelectedPageId] = useState(null);
+
   const params = useParams();
 
   // 다이어리 정보 조회
@@ -108,6 +111,21 @@ export default function PageList() {
 
     fetchData();
   }, []);
+
+  // 선택한 날짜로 페이지 스크롤링
+  useEffect(() => {
+    if (selectedPageId !== null) {
+      const selectedPageElement = document.getElementById(
+        `page-${selectedPageId}`
+      );
+
+      if (selectedPageElement) {
+        selectedPageElement.scrollIntoView({
+          behavior: "smooth",
+        });
+      }
+    }
+  }, [selectedPageId]);
 
   // 글쓰기 활성화 유저
   const activeUserIndex = diary?.pages?.length % diary?.users?.length;
@@ -171,7 +189,10 @@ export default function PageList() {
               </WriteBtn>
             </Link>
           )}
-          <MyCalendar />
+          <MyCalendar
+            selectedPageId={selectedPageId}
+            setSelectedPageId={setSelectedPageId}
+          />
         </div>
       </SideWrapper>
 
@@ -187,7 +208,10 @@ export default function PageList() {
               to={`/diaries/${params.diary_id}/pages/${page.page_id}`}
               key={page.page_id}
             >
-              <PageBox style={{ border: `3px solid ${boxColor}` }}>
+              <PageBox
+                id={`page-${page.page_id}`}
+                style={{ border: `3px solid ${boxColor}` }}
+              >
                 <PageTitle style={{ backgroundColor: boxColor }}>
                   <div>
                     <span className="text-2xl">{page.subject} </span>

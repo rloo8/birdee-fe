@@ -51,13 +51,14 @@ const Dot = styled.div`
   border-radius: 50%;
 `;
 
-function MyCalendar() {
+function MyCalendar({ selectedPageId, setSelectedPageId }) {
   const [pages, setPages] = useState([]);
   const [uploadDates, setUploadDates] = useState([]);
 
   const params = useParams();
+  const date = new Date();
 
-  // 다이어리 정보 조회
+  // 페이지 목록 조회
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -69,7 +70,6 @@ function MyCalendar() {
             },
           }
         );
-
         setPages(response.data.data.pages);
 
         // 페이지 업로드 날짜 배열
@@ -85,8 +85,6 @@ function MyCalendar() {
     fetchData();
   }, [params.diary_id]);
 
-  const [date, setDate] = useState(new Date());
-
   // 업로드 날짜 확인 후, 캘린더에 dot 표시
   const uploadContent = ({ date }) => {
     const formatDate = moment(date).format("YYYY-MM-DD");
@@ -95,10 +93,26 @@ function MyCalendar() {
     return hasUploadContent ? <Dot /> : null;
   };
 
+  // 클릭 이벤트 핸들러
+  const handleDateClick = (clickedDate) => {
+    const clickedDateFormatted = moment(clickedDate).format("YYYY-MM-DD");
+
+    // 선택한 날짜에 생성된 page 배열
+    const selectedPages = pages.filter(
+      (page) =>
+        moment(page.created_at).format("YYYY-MM-DD") === clickedDateFormatted
+    );
+
+    // 가장 최근에 생성된 페이지 ID 저장
+    setSelectedPageId(
+      selectedPages.length > 0 ? selectedPages[0].page_id : null
+    );
+  };
+
   return (
     <CalendarContainer>
       <Calendar
-        onChange={setDate}
+        onChange={handleDateClick}
         value={date}
         formatDay={(_, date) => moment(date).format("D")}
         tileContent={uploadContent}
