@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { HOST_URL } from "../../App";
+import { useState } from "react";
 
 const Wrapper = styled.div`
   width: 70vw;
@@ -44,19 +45,27 @@ export default function Login() {
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
 
+  // 에러메세지
+  const [errorMessage, setErrorMessage] = useState("");
+
   const onValid = async (data) => {
     try {
       const response = await axios.post(`${HOST_URL}/auth/login`, data);
-      // console.log(response.data);
+
       if (response.data.success) {
         const token = response.data.token;
-        console.log(response.data);
         localStorage.setItem("token", token);
-
-        // axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         navigate("/");
       } else {
-        alert(response.data.message);
+        if (response.data.message === "incorrect password") {
+          setErrorMessage("비밀번호가 올바르지 않습니다.");
+        } else if (
+          response.data.message.startsWith("not registered username")
+        ) {
+          setErrorMessage("등록되지 않은 사용자입니다.");
+        } else {
+          console.log(response.data.message);
+        }
       }
     } catch (error) {
       console.error("로그인 중 오류 발생:", error);
@@ -90,6 +99,7 @@ export default function Login() {
             type="password"
           />
         </LoginInput>
+        <span className="text-red-500 text-right">{errorMessage}</span>
         <LoginBtn>LOGIN</LoginBtn>
       </form>
 
