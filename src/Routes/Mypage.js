@@ -77,11 +77,10 @@ const ModalBox = styled.div`
     display: flex;
     justify-content: space-between;
     gap: 50px;
-    width: 70%;
-  }
-  button {
-    width: 100%;
-    ${btnStyle}
+    button {
+      width: 100%;
+      ${btnStyle}
+    }
   }
 `;
 
@@ -89,9 +88,12 @@ function Mypage() {
   const [user, setUser] = useState({});
   const [showLogoutModal, setShowLogoutModal] = useState(null);
 
+  // 에러메세지
+  const [errorMessage, setErrorMessage] = useState(null);
+
   const navigate = useNavigate();
 
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, watch } = useForm();
 
   // 유저 정보 조회
   useEffect(() => {
@@ -105,7 +107,6 @@ function Mypage() {
         });
 
         setUser(response.data.data);
-        console.log(response.data.data);
       } catch (error) {
         console.error("fetch 오류:", error);
       }
@@ -120,9 +121,41 @@ function Mypage() {
     navigate("/login");
   };
 
-  // 회원 탈퇴
-  const handleDeleteAccount = () => {
-    console.log("탈퇴 테스트");
+  // 회원 탈퇴 시 비밀번호 확인
+  const handleDeleteAccount = async (data) => {
+    try {
+      const checkResponse = await axios.post(
+        `${HOST_URL}/auth/check-password`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      // 비밀번호 일치 시 탈퇴
+      if (checkResponse.data.success) {
+        try {
+          await axios.delete(`${HOST_URL}/auth/member`, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          });
+
+          localStorage.removeItem("token");
+          navigate("/login");
+        } catch (error) {
+          console.error("회원 탈퇴에 실패하였습니다.");
+        }
+      } else {
+        setErrorMessage("비밀번호를 확인해주세요");
+      }
+    } catch (error) {
+      console.error("fetch 오류:", error);
+    }
   };
 
   return (
@@ -268,8 +301,8 @@ function Mypage() {
       {/* //모달창 */}
       {showLogoutModal === "logout" ? (
         <ModalBox>
-          <span className="text-2xl">로그아웃 하시겠습니까?</span>
-          <div className="btnBox">
+          <span className="text-3xl">로그아웃 하시겠습니까?</span>
+          <div className="btnBox w-[70%]">
             <button onClick={handleLogout}>예</button>
             <button onClick={() => setShowLogoutModal(null)}>아니오</button>
           </div>
@@ -280,19 +313,25 @@ function Mypage() {
           <span className="text-lg text-center">
             탈퇴를 원하실 경우
             <br />
-            아래 입력창에 비밀번호를 입력하시고
+            아래 입력창에 <span className="text-red-500">비밀번호</span>를
+            입력하시고
             <br />
             탈퇴 버튼을 눌러주세요.
           </span>
-          <form onSubmit={handleSubmit(handleDeleteAccount)}>
+          <form
+            onSubmit={handleSubmit(handleDeleteAccount)}
+            className="flex flex-col gap-2"
+          >
             <input
               {...register("password", {
                 required: "비밀번호를 입력해주세요",
                 validate: {},
               })}
               type="password"
+              className="p-2"
             />
-            <div className="btnBox">
+            <p className="text-red-500 text-center">{errorMessage}</p>
+            <div className="btnBox w-full">
               <button type="submit">탈퇴</button>
               <button onClick={() => setShowLogoutModal(null)}>취소</button>
             </div>
