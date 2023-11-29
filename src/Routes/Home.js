@@ -150,10 +150,15 @@ function Home() {
   const [showBtn, setShowBtn] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
+  const [selectedDiaryId, setSelectedDiaryId] = useState(null);
+
+  // 카테고리
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
-  const [selectedDiaryId, setSelectedDiaryId] = useState(null);
+  // 카테고리 이름
+  const [editedCategoryName, setEditedCategoryName] = useState();
+  const [editMode, setEditMode] = useState(false);
 
   // 페이지네이션
   const [lastId, setLastId] = useState(null);
@@ -175,7 +180,7 @@ function Home() {
         },
       });
       if (response.data.result !== null) {
-        setDiaries(response.data.result);
+        setDiaries(response.data.result.Diaries);
       }
     } catch (error) {
       console.error("fetch 오류:", error);
@@ -241,7 +246,6 @@ function Home() {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      console.log("카테고리 목록: ", response.data.category);
       setCategories(response.data.category);
     } catch (error) {
       console.error("fetch 오류:", error);
@@ -274,17 +278,64 @@ function Home() {
   };
 
   // 해당 카테고리 목록 조회
-  const handleCategoryClick = (categoryId) => {
+  const handleCategoryClick = async (category) => {
     // 클릭한 카테고리의 ID를 state에 저장
-    console.log(categoryId);
-    setSelectedCategory(categoryId);
+    setSelectedCategory(category);
+
+    try {
+      const response = await axios.get(
+        `${HOST_URL}/category/${category.id}/diaries`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      setDiaries(response.data.result.Diaries);
+    } catch (error) {
+      console.error("fetch 오류:", error);
+    }
+  };
+
+  // 카테고리 이름 수정
+  const handleEditSubmit = async () => {
+    try {
+      // API 호출
+      await axios.put(
+        `${HOST_URL}/category/${selectedCategory.id}`,
+        {
+          // 수정된 카테고리 이름
+          cname: editedCategoryName,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      console.log("카테고리 수정 성공");
+
+      updateCategories();
+      setEditMode(false);
+      setSelectedCategory({ cname: editedCategoryName });
+    } catch (error) {
+      console.error("카테고리 수정 실패: ", error);
+    }
+  };
+
+  // 카테고리 edit 모드로 변경
+  const editCategory = async () => {
+    setEditMode(!editMode);
+    setEditedCategoryName(selectedCategory.cname);
   };
 
   // 해당 카테고리 삭제
   const deleteCategory = async () => {
     try {
       const response = await axios.delete(
-        `${HOST_URL}/category/${selectedCategory}`,
+        `${HOST_URL}/category/${selectedCategory.id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -469,33 +520,84 @@ function Home() {
             </SolidBtn>
           </li>
           <li>
-            <CategoryBtn onClick={getAllCategory}>ALL</CategoryBtn>
+            <CategoryBtn
+              onClick={() => {
+                getAllCategory();
+                setSelectedCategory(null);
+              }}
+            >
+              ALL
+            </CategoryBtn>
           </li>
           {categories.map((category) => (
             <li key={category.id}>
-              <CategoryBtn onClick={() => handleCategoryClick(category.id)}>
+              <CategoryBtn onClick={() => handleCategoryClick(category)}>
                 {category.cname}
               </CategoryBtn>
             </li>
           ))}
         </CategoryBox>
 
-        <div className="flex justify-between">
-          <h1 className="text-5xl pb-[20px]">ALL</h1>
-          <button onClick={deleteCategory}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="#000"
-              className="w-8 h-8"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
+        <div className="flex justify-between items-center">
+          {editMode ? (
+            <input
+              type="text"
+              value={editedCategoryName}
+              onChange={(e) => setEditedCategoryName(e.target.value)}
+              className="text-4xl p-[10px] mb-[10px]"
+            />
+          ) : (
+            <h1 className="text-5xl pb-[20px]">
+              {selectedCategory ? selectedCategory.cname : "ALL"}
+            </h1>
+          )}
+
+          <div className="flex gap-5">
+            {editMode ? (
+              <>
+                <button
+                  onClick={handleEditSubmit}
+                  className="bg-[#4d9cd0] text-white p-2"
+                >
+                  수정
+                </button>
+                <button
+                  onClick={editCategory}
+                  className="bg-[#4d9cd0] text-white p-2"
+                >
+                  취소
+                </button>
+              </>
+            ) : selectedCategory ? (
+              <>
+                <button onClick={editCategory}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="#4d9cd0"
+                    className="w-9 h-9"
+                  >
+                    <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
+                    <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
+                  </svg>
+                </button>
+                <button onClick={deleteCategory}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="#4d9cd0"
+                    className="w-8 h-8"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+              </>
+            ) : null}
+          </div>
         </div>
 
         <DiaryBox>
