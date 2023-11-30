@@ -84,9 +84,9 @@ export default function CreateAccount() {
       setIdValidation(response.data.success);
 
       if (!response.data.success) {
-        alert(response.data.message);
+        alert("사용 가능한 아이디입니다.");
       } else {
-        alert(response.data.result);
+        alert("이미 존재하는 아이디입니다. 다른 아이디를 사용해주세요.");
       }
     } catch (error) {
       console.error("아이디 중복 확인 실패: ", error);

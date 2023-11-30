@@ -31,10 +31,9 @@ const SolidBtn = styled.button`
 const BoxWrapper = styled.div`
   position: relative;
   width: 35vw;
-  height: 80vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   padding: 20px;
   gap: 15px;
@@ -64,9 +63,9 @@ const ModalBox = styled.div`
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+  gap: 30px;
   width: 700px;
-  height: 350px;
-  padding: 30px;
+  padding: 40px;
   ${modalBoxStyle}
   position: absolute;
   top: 50%;
@@ -77,17 +76,19 @@ const ModalBox = styled.div`
     display: flex;
     justify-content: space-between;
     gap: 50px;
-    width: 70%;
-  }
-  button {
-    width: 100%;
-    ${btnStyle}
+    button {
+      width: 100%;
+      ${btnStyle}
+    }
   }
 `;
 
 function Mypage() {
   const [user, setUser] = useState({});
-  const [showLogoutModal, setShowLogoutModal] = useState(null);
+  const [ShowModal, setShowModal] = useState(null);
+
+  // 에러메세지
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const navigate = useNavigate();
 
@@ -120,9 +121,41 @@ function Mypage() {
     navigate("/login");
   };
 
-  // 회원 탈퇴
-  const handleDeleteAccount = () => {
-    console.log("탈퇴 테스트");
+  // 회원 탈퇴 시 비밀번호 확인
+  const handleDeleteAccount = async (data) => {
+    try {
+      const checkResponse = await axios.post(
+        `${HOST_URL}/auth/check-password`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      // 비밀번호 일치 시 탈퇴
+      if (checkResponse.data.success) {
+        try {
+          await axios.delete(`${HOST_URL}/auth/member`, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          });
+
+          localStorage.removeItem("token");
+          navigate("/login");
+        } catch (error) {
+          console.error("회원 탈퇴에 실패하였습니다.");
+        }
+      } else {
+        setErrorMessage("비밀번호를 확인해주세요");
+      }
+    } catch (error) {
+      console.error("fetch 오류:", error);
+    }
   };
 
   return (
@@ -179,6 +212,10 @@ function Mypage() {
             <span>{user.birth}</span>
           </Box>
           <Box>
+            <span>email</span>
+            <span>{user.email}</span>
+          </Box>
+          <Box>
             <span>작성한 일기</span>
             <span>{user.pages_count}</span>
           </Box>
@@ -188,53 +225,13 @@ function Mypage() {
           </Box>
         </BoxWrapper>
 
-        <BoxWrapper>
-          <Link to="/diaries/hidden" className="w-full">
-            <Box>
-              <span>숨긴 일기장</span>
-              <svg
-                width="30px"
-                height="30px"
-                viewBox="0 0 24 24"
-                strokeWidth="3.5"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                color="#4d9cd0"
-              >
-                <path
-                  d="M19.5 16L17.0248 12.6038"
-                  stroke="#4d9cd0"
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></path>
-                <path
-                  d="M12 17.5V14"
-                  stroke="#4d9cd0"
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></path>
-                <path
-                  d="M4.5 16L6.96895 12.6124"
-                  stroke="#4d9cd0"
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></path>
-                <path
-                  d="M3 8C6.6 16 17.4 16 21 8"
-                  stroke="#4d9cd0"
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></path>
-              </svg>
-            </Box>
-          </Link>
-          <Link to="/diaries/deleted" className="w-full">
-            <Box>
-              <span>삭제한 일기장</span>
+        <BoxWrapper className="flex flex-col ">
+          <div className="flex flex-col w-full gap-3">
+            <Box
+              onClick={() => setShowModal("invite")}
+              className="cursor-pointer"
+            >
+              <span>초대 목록({user?.inviteList?.length})</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -243,60 +240,163 @@ function Mypage() {
               >
                 <path
                   fillRule="evenodd"
-                  d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
+                  d="M5.25 9a6.75 6.75 0 0113.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 01-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 11-7.48 0 24.585 24.585 0 01-4.831-1.244.75.75 0 01-.298-1.205A8.217 8.217 0 005.25 9.75V9zm4.502 8.9a2.25 2.25 0 104.496 0 25.057 25.057 0 01-4.496 0z"
                   clipRule="evenodd"
                 />
               </svg>
             </Box>
-          </Link>
+            <Link to="/diaries/hidden" className="w-full">
+              <Box>
+                <span>숨긴 일기장</span>
+                <svg
+                  width="30px"
+                  height="30px"
+                  viewBox="0 0 24 24"
+                  strokeWidth="3.5"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  color="#4d9cd0"
+                >
+                  <path
+                    d="M19.5 16L17.0248 12.6038"
+                    stroke="#4d9cd0"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></path>
+                  <path
+                    d="M12 17.5V14"
+                    stroke="#4d9cd0"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></path>
+                  <path
+                    d="M4.5 16L6.96895 12.6124"
+                    stroke="#4d9cd0"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></path>
+                  <path
+                    d="M3 8C6.6 16 17.4 16 21 8"
+                    stroke="#4d9cd0"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></path>
+                </svg>
+              </Box>
+            </Link>
+            <Link to="/diaries/deleted" className="w-full">
+              <Box>
+                <span>삭제한 일기장</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="#4d9cd0"
+                  className="w-8 h-8"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </Box>
+            </Link>
+          </div>
 
-          <Box
-            onClick={() => setShowLogoutModal("logout")}
-            className="cursor-pointer"
-          >
-            <span>LOGOUT</span>
-          </Box>
-          <Box
-            onClick={() => setShowLogoutModal("delete")}
-            className="cursor-pointer"
-          >
-            <span>회원탈퇴</span>
-          </Box>
+          <div className="flex flex-col w-full gap-3">
+            <Box
+              onClick={() => setShowModal("logout")}
+              className="cursor-pointer"
+            >
+              <span>LOGOUT</span>
+            </Box>
+            <Box
+              onClick={() => setShowModal("delete")}
+              className="cursor-pointer"
+            >
+              <span>회원탈퇴</span>
+            </Box>
+          </div>
         </BoxWrapper>
       </div>
 
       {/* //모달창 */}
-      {showLogoutModal === "logout" ? (
+      {ShowModal === "logout" ? (
         <ModalBox>
-          <span className="text-2xl">로그아웃 하시겠습니까?</span>
-          <div className="btnBox">
+          <span className="text-2xl p-7">로그아웃 하시겠습니까?</span>
+          <div className="btnBox w-[60%]">
             <button onClick={handleLogout}>예</button>
-            <button onClick={() => setShowLogoutModal(null)}>아니오</button>
+            <button onClick={() => setShowModal(null)}>아니오</button>
           </div>
         </ModalBox>
-      ) : showLogoutModal === "delete" ? (
+      ) : ShowModal === "delete" ? (
         <ModalBox>
           <span className="text-3xl">정말 탈퇴하시겠습니까?</span>
           <span className="text-lg text-center">
             탈퇴를 원하실 경우
             <br />
-            아래 입력창에 비밀번호를 입력하시고
+            아래 입력창에 <span className="text-red-500">비밀번호</span>를
+            입력하시고
             <br />
             탈퇴 버튼을 눌러주세요.
           </span>
-          <form onSubmit={handleSubmit(handleDeleteAccount)}>
+          <form
+            onSubmit={handleSubmit(handleDeleteAccount)}
+            className="flex flex-col gap-2"
+          >
             <input
               {...register("password", {
                 required: "비밀번호를 입력해주세요",
                 validate: {},
               })}
               type="password"
+              className="p-2"
             />
-            <div className="btnBox">
+            <p className="text-red-500 text-center">{errorMessage}</p>
+            <div className="btnBox w-full">
               <button type="submit">탈퇴</button>
-              <button onClick={() => setShowLogoutModal(null)}>취소</button>
+              <button onClick={() => setShowModal(null)}>취소</button>
             </div>
           </form>
+        </ModalBox>
+      ) : ShowModal === "invite" ? (
+        <ModalBox>
+          <div className="text-center">
+            <h2 className="text-3xl">초대 목록</h2>
+            <span>메일을 확인해주세요.</span>
+          </div>
+          <ul>
+            {user?.inviteList.map((invite, index) => (
+              <li
+                key={index}
+                className="bg-white px-7 py-3 m-3 flex items-center gap-5"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="#FFC83D"
+                  className="w-8 h-8"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5.25 9a6.75 6.75 0 0113.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 01-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 11-7.48 0 24.585 24.585 0 01-4.831-1.244.75.75 0 01-.298-1.205A8.217 8.217 0 005.25 9.75V9zm4.502 8.9a2.25 2.25 0 104.496 0 25.057 25.057 0 01-4.496 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span className="text-lg">
+                  {invite.owner_name}님이 [{invite.title}] 다이어리에
+                  초대했습니다.
+                </span>
+              </li>
+            ))}
+          </ul>
+          <div className="btnBox">
+            <button onClick={() => setShowModal(null)}>닫기</button>
+          </div>
         </ModalBox>
       ) : null}
     </Wrapper>
