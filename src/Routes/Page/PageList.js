@@ -197,39 +197,41 @@ export default function PageList() {
       </SideWrapper>
 
       <PageWrapper>
-        {pages?.map((page) => {
-          const userIndex = diary.users.findIndex(
-            (user) => user.user_id === page.user_id
-          );
-          const boxColor = color[userIndex];
+        {pages
+          ?.filter((page) => !page.deleted)
+          .map((page) => {
+            const userIndex = diary.users.findIndex(
+              (user) => user.user_id === page.user_id
+            );
+            const boxColor = color[userIndex];
 
-          return (
-            <Link
-              to={`/diaries/${params.diary_id}/pages/${page.page_id}`}
-              key={page.page_id}
-            >
-              <PageBox
-                id={`page-${page.page_id}`}
-                style={{ border: `3px solid ${boxColor}` }}
+            return (
+              <Link
+                to={`/diaries/${params.diary_id}/pages/${page.page_id}`}
+                key={page.page_id}
               >
-                <PageTitle style={{ backgroundColor: boxColor }}>
-                  <div>
-                    <span className="text-2xl">{page.subject} </span>
-                    <span className="text-xl">
-                      ({moment(page.created_at).format("YYYY.MM.DD")})
-                    </span>
-                  </div>
-                  <span className="text-xl">{page.name}</span>
-                </PageTitle>
-                <PageContent>
-                  {page.contents.length > 150
-                    ? `${page.contents.slice(0, 150)}...`
-                    : page.contents}
-                </PageContent>
-              </PageBox>
-            </Link>
-          );
-        })}
+                <PageBox
+                  id={`page-${page.page_id}`}
+                  style={{ border: `3px solid ${boxColor}` }}
+                >
+                  <PageTitle style={{ backgroundColor: boxColor }}>
+                    <div>
+                      <span className="text-2xl">{page.subject} </span>
+                      <span className="text-xl">
+                        ({moment(page.created_at).format("YYYY.MM.DD")})
+                      </span>
+                    </div>
+                    <span className="text-xl">{page.name}</span>
+                  </PageTitle>
+                  <PageContent>
+                    {page.contents.length > 150
+                      ? `${page.contents.slice(0, 150)}...`
+                      : page.contents}
+                  </PageContent>
+                </PageBox>
+              </Link>
+            );
+          })}
       </PageWrapper>
     </Wrapper>
   );
