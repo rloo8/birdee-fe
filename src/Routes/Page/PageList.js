@@ -12,6 +12,7 @@ import TooltipButton from "../../Components/TooltipButton";
 const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
+  gap: 20px;
   padding: 30px;
   height: 100vh;
   ::-webkit-scrollbar {
@@ -31,7 +32,7 @@ const WriteBtn = styled.button`
 
 const PageWrapper = styled.div`
   margin-top: 40px;
-  width: 70%;
+  width: 60%;
   padding: 30px;
   overflow-y: auto;
   height: 100%;
@@ -48,7 +49,7 @@ const PageTitle = styled.div`
 `;
 const PageContent = styled.div`
   padding: 20px;
-  font-size: 20px;
+  font-size: 17px;
 `;
 
 export default function PageList() {
@@ -150,10 +151,10 @@ export default function PageList() {
             />
           </Link>
 
-          <h1 className="text-5xl">{diary.title}</h1>
+          <h1 className="text-4xl">{diary.title}</h1>
           <ul className="text-xl">
             {diary?.users?.map((user, index) => (
-              <li key={index} className="pl-2 flex">
+              <li key={index} className="pl-1 flex">
                 <span
                   className={user.status === "pending" ? "text-gray-400" : null}
                 >
@@ -164,7 +165,7 @@ export default function PageList() {
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="#000"
-                    className="w-9 h-9"
+                    className="w-8 h-8"
                   >
                     <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
                   </svg>
@@ -215,8 +216,8 @@ export default function PageList() {
                 >
                   <PageTitle style={{ backgroundColor: boxColor }}>
                     <div>
-                      <span className="text-2xl">{page.subject} </span>
-                      <span className="text-xl">
+                      <span className="text-xl">{page.subject} </span>
+                      <span className="text-md">
                         ({moment(page.created_at).format("YYYY.MM.DD")})
                       </span>
                     </div>

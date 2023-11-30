@@ -10,18 +10,22 @@ import { HOST_URL } from "../App";
 const CalendarContainer = styled.div`
   .react-calendar {
     font-family: "DungGeunMo";
-    font-size: 20px;
+    font-size: 17px;
     border: none;
   }
   .react-calendar__tile--active {
-    color: blue;
+    color: #4d9cd0;
+    font-weight: bold;
+    background: #f2dd98;
   }
   .react-calendar__navigation {
     background: #4d9cd0;
     height: 50px;
-
+    button {
+      font-size: 22px;
+    }
     span {
-      font-size: 20px;
+      font-size: 18px;
       color: #fff;
     }
   }
@@ -40,7 +44,7 @@ const CalendarContainer = styled.div`
 
   .react-calendar__navigation button:enabled:hover,
   .react-calendar__navigation button:enabled:focus {
-    background-color: #eeece8;
+    background-color: #0c7cc5;
   }
 `;
 
