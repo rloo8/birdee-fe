@@ -99,7 +99,7 @@ export default function DeletedDiary() {
                 />
               </svg>
             }
-            left="85%"
+            left="100%"
           />
         </Link>
       </BtnWrapper>

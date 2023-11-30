@@ -237,7 +237,7 @@ export default function HiddenDiary() {
                 />
               </svg>
             }
-            left="85%"
+            left="100%"
           />
         </Link>
         <TooltipButton
@@ -271,7 +271,7 @@ export default function HiddenDiary() {
               ></path>
             </svg>
           }
-          left="85%"
+          left="100%"
         />
         <TooltipButton
           text="삭제"
@@ -291,7 +291,7 @@ export default function HiddenDiary() {
               />
             </svg>
           }
-          left="85%"
+          left="100%"
         />
       </BtnWrapper>
 
