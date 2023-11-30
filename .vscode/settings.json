@@ -1,0 +1,4 @@
+{
+  "appService.defaultWebAppToDeploy": "undefined/subscriptions/2178e953-b4a3-479f-98bd-b43768155121/resourceGroups/rg-birdee/providers/Microsoft.Web/sites/webbirdee",
+  "appService.deploySubpath": "."
+}

@@ -13,6 +13,7 @@ import { useSetRecoilState } from "recoil";
 import { inviteListState } from "../Components/atoms";
 import { HOST_URL } from "../App";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import TooltipButton from "../Components/TooltipButton";
 
 // styled components
 const Wrapper = styled.div`
@@ -29,22 +30,22 @@ const Wrapper = styled.div`
 const BtnWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 5px;
 `;
 const SolidBtn = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   ${solidBtnStyle}
 `;
 const StrokeBtn = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   ${stokeBtnStyle}
 `;
 
@@ -56,7 +57,7 @@ const ContentBox = styled.div`
 // 카테고리 컴포넌트
 const CategoryBox = styled.ul`
   position: absolute;
-  left: -58px;
+  left: -48px;
   bottom: 0;
   display: flex;
   flex-direction: column-reverse;
@@ -69,7 +70,7 @@ const CategoryBtn = styled.button`
   border-left: 2px solid #4d9cd0;
   border-right: 2px solid #4d9cd0;
   border-top: 2px solid #4d9cd0;
-  width: 60px;
+  width: 50px;
   padding: 15px;
   writing-mode: vertical-rl;
   text-orientation: upright;
@@ -386,14 +387,16 @@ function Home() {
   return (
     <Wrapper>
       <BtnWrapper>
-        <div className="flex flex-col gap-1">
-          <Link to="/mypage">
-            <SolidBtn className="mb-5">
+        <Link to="/mypage">
+          <TooltipButton
+            text="마이페이지"
+            btnType="solid"
+            icon={
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="#fff"
-                className="w-8 h-8"
+                className="w-6 h-6"
               >
                 <path
                   fillRule="evenodd"
@@ -401,15 +404,20 @@ function Home() {
                   clipRule="evenodd"
                 />
               </svg>
-            </SolidBtn>
-          </Link>
-          <Link to="/diaries/create" onClick={() => setInviteList([])}>
-            <StrokeBtn>
+            }
+            left="100%"
+          />
+        </Link>
+        <Link to="/diaries/create" onClick={() => setInviteList([])}>
+          <TooltipButton
+            text="일기장 만들기"
+            btnType="stroke"
+            icon={
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="#4d9cd0"
-                className="w-8 h-8"
+                className="w-6 h-6"
               >
                 <path
                   fillRule="evenodd"
@@ -417,12 +425,18 @@ function Home() {
                   clipRule="evenodd"
                 />
               </svg>
-            </StrokeBtn>
-          </Link>
-          <StrokeBtn onClick={() => onBtnClick("hidden")}>
+            }
+            left="100%"
+          />
+        </Link>
+        <TooltipButton
+          text="일기장 숨김"
+          btnType="stroke"
+          onClick={() => onBtnClick("hidden")}
+          icon={
             <svg
-              width="24px"
-              height="24px"
+              width="20px"
+              height="20px"
               viewBox="0 0 24 24"
               strokeWidth="3.5"
               fill="none"
@@ -458,13 +472,19 @@ function Home() {
                 strokeLinejoin="round"
               ></path>
             </svg>
-          </StrokeBtn>
-          <StrokeBtn onClick={() => onBtnClick("delete")}>
+          }
+          left="100%"
+        />
+        <TooltipButton
+          text="일기장 삭제"
+          btnType="stroke"
+          onClick={() => onBtnClick("delete")}
+          icon={
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="#4d9cd0"
-              className="w-8 h-8"
+              className="w-6 h-6"
             >
               <path
                 fillRule="evenodd"
@@ -472,62 +492,9 @@ function Home() {
                 clipRule="evenodd"
               />
             </svg>
-          </StrokeBtn>
-        </div>
-
-        {/* 페이지네이션 버튼 */}
-        <div className="flex gap-1">
-          <StrokeBtn
-            onClick={() => {
-              setFirstId(diaries[0]?.id);
-              setLastId(null);
-            }}
-          >
-            <svg
-              width="25px"
-              height="25px"
-              viewBox="2 0 25 25"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              color="#4d9cd0"
-              strokeWidth="1.5"
-            >
-              <path
-                d="M17.0282 5.2672C17.4217 4.95657 18 5.23682 18 5.73813V18.2619C18 18.7632 17.4217 19.0434 17.0282 18.7328L9.09651 12.4709C8.79223 12.2307 8.79223 11.7693 9.09651 11.5291L17.0282 5.2672Z"
-                fill="#4d9cd0"
-                stroke="#4d9cd0"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              ></path>
-            </svg>
-          </StrokeBtn>
-          <StrokeBtn
-            onClick={() => {
-              setLastId(diaries[diaries.length - 1]?.id);
-              setFirstId(null);
-            }}
-          >
-            <svg
-              width="25px"
-              height="25px"
-              viewBox="0 0 20 25"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              color="#4d9cd0"
-              strokeWidth="1.5"
-            >
-              <path
-                d="M6.97179 5.2672C6.57832 4.95657 6 5.23682 6 5.73813V18.2619C6 18.7632 6.57832 19.0434 6.97179 18.7328L14.9035 12.4709C15.2078 12.2307 15.2078 11.7693 14.9035 11.5291L6.97179 5.2672Z"
-                fill="#4d9cd0"
-                stroke="#4d9cd0"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              ></path>
-            </svg>
-          </StrokeBtn>
-        </div>
+          }
+          left="100%"
+        />
       </BtnWrapper>
 
       <ContentBox>
@@ -739,6 +706,60 @@ function Home() {
           </Droppable>
         </DragDropContext>
       </ContentBox>
+
+      {/* 페이지네이션 버튼 */}
+      <div className="flex gap-1 absolute bottom-[30px]">
+        <StrokeBtn
+          onClick={() => {
+            setFirstId(diaries[0]?.id);
+            setLastId(null);
+          }}
+        >
+          <svg
+            width="20px"
+            height="20px"
+            viewBox="2 0 25 25"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            color="#4d9cd0"
+            strokeWidth="1.5"
+          >
+            <path
+              d="M17.0282 5.2672C17.4217 4.95657 18 5.23682 18 5.73813V18.2619C18 18.7632 17.4217 19.0434 17.0282 18.7328L9.09651 12.4709C8.79223 12.2307 8.79223 11.7693 9.09651 11.5291L17.0282 5.2672Z"
+              fill="#4d9cd0"
+              stroke="#4d9cd0"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            ></path>
+          </svg>
+        </StrokeBtn>
+        <StrokeBtn
+          onClick={() => {
+            setLastId(diaries[diaries.length - 1]?.id);
+            setFirstId(null);
+          }}
+        >
+          <svg
+            width="20px"
+            height="20px"
+            viewBox="0 0 20 25"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            color="#4d9cd0"
+            strokeWidth="1.5"
+          >
+            <path
+              d="M6.97179 5.2672C6.57832 4.95657 6 5.23682 6 5.73813V18.2619C6 18.7632 6.57832 19.0434 6.97179 18.7328L14.9035 12.4709C15.2078 12.2307 15.2078 11.7693 14.9035 11.5291L6.97179 5.2672Z"
+              fill="#4d9cd0"
+              stroke="#4d9cd0"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            ></path>
+          </svg>
+        </StrokeBtn>
+      </div>
 
       {showModal ? (
         <ModalBox>

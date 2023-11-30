@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { HOST_URL } from "../App";
 import { useForm } from "react-hook-form";
+import TooltipButton from "../Components/TooltipButton";
 
 // styled components
 const Wrapper = styled.div`
@@ -15,16 +16,10 @@ const Wrapper = styled.div`
   height: 100vh;
 `;
 
-const SolidBtn = styled.button`
+const Btn = styled.div`
   position: absolute;
   top: 30px;
   left: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 60px;
-  height: 60px;
-  ${solidBtnStyle}
 `;
 
 const BoxWrapper = styled.form`
@@ -134,22 +129,29 @@ export default function EditProfile() {
 
   return (
     <Wrapper>
-      <Link to="/mypage">
-        <SolidBtn className="mb-5">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="#fff"
-            className="w-8 h-8"
-          >
-            <path
-              fillRule="evenodd"
-              d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </SolidBtn>
-      </Link>
+      <Btn>
+        <Link to="/mypage">
+          <TooltipButton
+            text="마이페이지"
+            btnType="solid"
+            icon={
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="#fff"
+                className="w-6 h-6"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            }
+            left="100%"
+          />
+        </Link>
+      </Btn>
 
       <BoxWrapper>
         <button
