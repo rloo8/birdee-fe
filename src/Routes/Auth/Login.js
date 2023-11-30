@@ -7,7 +7,7 @@ import { HOST_URL } from "../../App";
 import { useState } from "react";
 
 const Wrapper = styled.div`
-  width: 70vw;
+  width: 60vw;
   padding: 40px;
   ${boxStyle}
   position: absolute;
@@ -75,8 +75,8 @@ export default function Login() {
   return (
     <Wrapper>
       <div>
-        <h1 className="text-center text-8xl">BIRDEE</h1>
-        <h2 className="text-center text-3xl">우리들의 교환일기</h2>
+        <h1 className="text-center text-7xl">BIRDEE</h1>
+        <h2 className="text-center text-2xl">우리들의 교환일기</h2>
       </div>
 
       <form
@@ -103,7 +103,7 @@ export default function Login() {
         <LoginBtn>LOGIN</LoginBtn>
       </form>
 
-      <div className="flex gap-5 text-xl">
+      <div className="flex gap-5 text-md">
         <span>계정이 없으신가요?</span>
         <Link to="/create-account">
           <span className="text-[#4d9cd0]">CREATE-ACCOUNT</span>

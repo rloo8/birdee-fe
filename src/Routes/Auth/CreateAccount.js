@@ -7,8 +7,8 @@ import { HOST_URL } from "../../App";
 import { useState } from "react";
 
 const Wrapper = styled.div`
-  width: 70vw;
-  padding: 40px;
+  width: 60vw;
+  padding: 30px;
   ${boxStyle}
   position: absolute;
   top: 50%;
@@ -18,7 +18,7 @@ const Wrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 50px;
+  gap: 30px;
 `;
 
 const CreateInput = styled.div`
@@ -27,11 +27,12 @@ const CreateInput = styled.div`
   align-items: center;
   gap: 25px;
   color: #4d9cd0;
-  font-size: 20px;
+  font-size: 18px;
   position: relative;
   input {
     ${boxStyle};
     padding: 10px;
+    font-size: 15px;
     color: #333;
     &:focus {
       outline: none;
@@ -98,12 +99,12 @@ export default function CreateAccount() {
   return (
     <Wrapper>
       <div>
-        <h1 className="text-center text-8xl">BIRDEE</h1>
-        <h2 className="text-center text-3xl">우리들의 교환일기</h2>
+        <h1 className="text-center text-7xl">BIRDEE</h1>
+        <h2 className="text-center text-2xl">우리들의 교환일기</h2>
       </div>
       <form
         onSubmit={handleSubmit(onValid)}
-        className="flex flex-col justify-center gap-2"
+        className="flex flex-col justify-center gap-1"
       >
         <CreateInput>
           <label htmlFor="user_id">ID</label>
@@ -114,7 +115,7 @@ export default function CreateAccount() {
           />
           <button
             onClick={onCheckId}
-            className="p-1 text-white bg-[#4d9cd0] text-lg absolute right-2"
+            className="p-1 text-white bg-[#4d9cd0] text-sm absolute right-2"
           >
             중복확인
           </button>
@@ -208,7 +209,7 @@ export default function CreateAccount() {
 
         <CreateBtn>Create Account</CreateBtn>
       </form>
-      <div className="flex gap-5 text-xl">
+      <div className="flex gap-5 text-md">
         <span>계정이 이미 있으신가요?</span>
         <Link to="/login">
           <span className="text-[#4d9cd0]">LOGIN</span>
