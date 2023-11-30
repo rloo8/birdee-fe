@@ -12,6 +12,7 @@ import axios from "axios";
 import { useSetRecoilState } from "recoil";
 import { inviteListState } from "../Components/atoms";
 import { HOST_URL } from "../App";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 // styled components
 const Wrapper = styled.div`
@@ -144,7 +145,6 @@ const ModalBox = styled.div`
     ${btnStyle}
   }
 `;
-
 function Home() {
   const [diaries, setDiaries] = useState([]);
   const [showBtn, setShowBtn] = useState(null);
@@ -159,6 +159,9 @@ function Home() {
   // 카테고리 이름
   const [editedCategoryName, setEditedCategoryName] = useState();
   const [editMode, setEditMode] = useState(false);
+
+  // 카테고리에 hover했을 때
+  const [hoveredCategory, setHoveredCategory] = useState(null);
 
   // 페이지네이션
   const [lastId, setLastId] = useState(null);
@@ -237,7 +240,7 @@ function Home() {
     }
   };
 
-  // 카테고리 조회
+  // 카테고리 리스트 조회
   const updateCategories = async () => {
     try {
       const response = await axios.get(`${HOST_URL}/category`, {
@@ -346,6 +349,36 @@ function Home() {
       updateCategories();
     } catch (error) {
       console.error("카테고리 삭제 중 오류 발생:", error);
+    }
+  };
+
+  // 카테고리에 일기장 드래그해서 추가
+  const onDragEnd = async (result) => {
+    if (!result) {
+      return;
+    }
+
+    const diaryId = result.draggableId;
+
+    if (hoveredCategory) {
+      try {
+        const response = await axios.put(
+          `${HOST_URL}/category/${hoveredCategory}/diaries`,
+          {
+            diary_id: diaryId,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        console.log("카테고리에 추가 성공: ", response.data.success);
+        handleCategoryClick(selectedCategory);
+      } catch (error) {
+        console.error("카테고리에 추가 실패: ", error);
+      }
     }
   };
 
@@ -530,7 +563,11 @@ function Home() {
             </CategoryBtn>
           </li>
           {categories.map((category) => (
-            <li key={category.id}>
+            <li
+              key={category.id}
+              onMouseEnter={() => setHoveredCategory(category.id)}
+              onMouseLeave={() => setHoveredCategory(null)}
+            >
               <CategoryBtn onClick={() => handleCategoryClick(category)}>
                 {category.cname}
               </CategoryBtn>
@@ -600,87 +637,106 @@ function Home() {
           </div>
         </div>
 
-        <DiaryBox>
-          {diaries?.map((diary) => (
-            <Diary key={diary.id}>
-              {showBtn === "hidden" ? (
-                <DiaryBtn
-                  onClick={() => {
-                    setSelectedDiaryId(diary.id);
-                    setShowModal(true);
-                  }}
-                >
-                  <svg
-                    width="24px"
-                    height="24px"
-                    viewBox="0 0 24 24"
-                    strokeWidth="3.5"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    color="#fff"
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="diary" direction="horizontal">
+            {(magic) => (
+              <DiaryBox ref={magic.innerRef} {...magic.droppableProps}>
+                {diaries?.map((diary, index) => (
+                  <Draggable
+                    draggableId={String(diary.id)}
+                    index={index}
+                    key={String(diary.id)}
                   >
-                    <path
-                      d="M19.5 16L17.0248 12.6038"
-                      stroke="#fff"
-                      strokeWidth="3.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    ></path>
-                    <path
-                      d="M12 17.5V14"
-                      stroke="#fff"
-                      strokeWidth="3.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    ></path>
-                    <path
-                      d="M4.5 16L6.96895 12.6124"
-                      stroke="#fff"
-                      strokeWidth="3.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    ></path>
-                    <path
-                      d="M3 8C6.6 16 17.4 16 21 8"
-                      stroke="#fff"
-                      strokeWidth="3.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    ></path>
-                  </svg>
-                </DiaryBtn>
-              ) : null}
-              {showBtn === "delete" ? (
-                <DiaryBtn
-                  onClick={() => {
-                    setSelectedDiaryId(diary.id);
-                    setShowModal(true);
-                  }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="#fff"
-                    className="w-8 h-8"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </DiaryBtn>
-              ) : null}
-              <DiaryTitle>{diary.title}</DiaryTitle>
-              <Link to={`/diaries/${diary.id}/pages`}>
-                <DiaryCover
-                  src={`/image/${diary.color}.png`}
-                  alt={diary.title}
-                />
-              </Link>
-            </Diary>
-          ))}
-        </DiaryBox>
+                    {(magic) => (
+                      <Diary
+                        ref={magic.innerRef}
+                        {...magic.dragHandleProps}
+                        {...magic.draggableProps}
+                      >
+                        {showBtn === "hidden" ? (
+                          <DiaryBtn
+                            onClick={() => {
+                              setSelectedDiaryId(diary.id);
+                              setShowModal(true);
+                            }}
+                          >
+                            <svg
+                              width="24px"
+                              height="24px"
+                              viewBox="0 0 24 24"
+                              strokeWidth="3.5"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              color="#fff"
+                            >
+                              <path
+                                d="M19.5 16L17.0248 12.6038"
+                                stroke="#fff"
+                                strokeWidth="3.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                              <path
+                                d="M12 17.5V14"
+                                stroke="#fff"
+                                strokeWidth="3.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                              <path
+                                d="M4.5 16L6.96895 12.6124"
+                                stroke="#fff"
+                                strokeWidth="3.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                              <path
+                                d="M3 8C6.6 16 17.4 16 21 8"
+                                stroke="#fff"
+                                strokeWidth="3.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                            </svg>
+                          </DiaryBtn>
+                        ) : null}
+                        {showBtn === "delete" ? (
+                          <DiaryBtn
+                            onClick={() => {
+                              setSelectedDiaryId(diary.id);
+                              setShowModal(true);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="#fff"
+                              className="w-8 h-8"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </DiaryBtn>
+                        ) : null}
+                        <DiaryTitle>{diary.title}</DiaryTitle>
+                        <Link to={`/diaries/${diary.id}/pages`}>
+                          <DiaryCover
+                            src={`/image/${diary.color}.png`}
+                            alt={diary.title}
+                          />
+                        </Link>
+                      </Diary>
+                    )}
+                  </Draggable>
+                ))}
+                {magic.placeholder}
+              </DiaryBox>
+            )}
+          </Droppable>
+        </DragDropContext>
       </ContentBox>
 
       {showModal ? (
