@@ -183,9 +183,9 @@ function Home() {
           firstId: firstId,
         },
       });
-      if (response.data.result !== null) {
-        setDiaries(response.data.result.Diaries);
-      }
+      console.log("전체 일기장 목록 조회");
+
+      setDiaries(response.data.result.Diaries);
     } catch (error) {
       console.error("fetch 오류:", error);
     }
@@ -216,7 +216,6 @@ function Home() {
           }
         );
         console.log("숨김 성공");
-        getAllCategory();
       }
       if (showBtn === "delete") {
         await axios.delete(
@@ -230,8 +229,8 @@ function Home() {
           }
         );
         console.log("삭제 성공");
-        getAllCategory();
       }
+      getAllCategory();
     } catch (error) {
       console.error("일기장 숨김 삭제 중 오류 발생:", error);
     } finally {
@@ -383,7 +382,6 @@ function Home() {
       }
     }
   };
-  console.log(hoveredCategory);
 
   return (
     <Wrapper>
