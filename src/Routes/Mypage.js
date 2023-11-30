@@ -31,7 +31,6 @@ const SolidBtn = styled.button`
 const BoxWrapper = styled.div`
   position: relative;
   width: 35vw;
-  height: 80vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -210,6 +209,10 @@ function Mypage() {
           <Box>
             <span>birth</span>
             <span>{user.birth}</span>
+          </Box>
+          <Box>
+            <span>email</span>
+            <span>{user.email}</span>
           </Box>
           <Box>
             <span>작성한 일기</span>
