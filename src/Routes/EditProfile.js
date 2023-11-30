@@ -25,16 +25,14 @@ const Btn = styled.div`
 const BoxWrapper = styled.form`
   position: relative;
   width: 50vw;
-  height: 80vh;
+  height: 90vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 20px;
   gap: 15px;
-  &:first-of-type {
-    ${boxStyle}
-  }
+  ${boxStyle}
 `;
 
 const Box = styled.div`
@@ -42,9 +40,9 @@ const Box = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 15px;
+  padding: 15px;
   ${boxStyle}
-  font-size: 25px;
+  font-size: 20px;
   label {
     color: #4d9cd0;
   }
@@ -159,8 +157,8 @@ export default function EditProfile() {
           className="absolute right-5 top-5"
         >
           <svg
-            width="35px"
-            height="35px"
+            width="33px"
+            height="33px"
             strokeWidth="1.5"
             viewBox="0 0 24 24"
             fill="none"
@@ -185,9 +183,9 @@ export default function EditProfile() {
           </svg>
         </button>
 
-        <h2 className="text-5xl">My Profile</h2>
+        <h2 className="text-4xl">My Profile</h2>
 
-        <label className="relative w-56 h-56 m-10 flex items-center justify-center border-2 border-dashed rounded-md border-gray-300 hover:border-[#4d9cd0] hover:text-[#4d9cd0] cursor-pointer">
+        <label className="relative w-56 h-56 m-3 flex items-center justify-center border-2 border-dashed rounded-md border-gray-300 hover:border-[#4d9cd0] hover:text-[#4d9cd0] cursor-pointer">
           {profileImg ? (
             <img
               src={profileImg}

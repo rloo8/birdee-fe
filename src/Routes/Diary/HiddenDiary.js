@@ -10,6 +10,8 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { HOST_URL } from "../../App";
+import TooltipButton from "../../Components/TooltipButton";
+import { motion } from "framer-motion";
 
 // styled components
 const Wrapper = styled.div`
@@ -26,43 +28,28 @@ const BtnWrapper = styled.div`
   flex-direction: column;
   gap: 5px;
 `;
-const SolidBtn = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 60px;
-  height: 60px;
-  ${solidBtnStyle}
-`;
-const StrokeBtn = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 60px;
-  height: 60px;
-  ${stokeBtnStyle}
-`;
 
 const ContentBox = styled.div`
   width: 80%;
 `;
 
+// 일기장 컴포넌트
 const DiaryBox = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 70px;
-  padding: 100px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 50px;
+  padding: 80px;
   ${boxStyle}
   overflow-y: auto;
   height: 100%;
 `;
 const Diary = styled.div`
   position: relative;
-  width: 200px;
-  height: 230px;
+  width: 160px;
+  height: 180px;
 `;
 const DiaryTitle = styled.h3`
-  font-size: 20px;
+  font-size: 18px;
   text-align: center;
   z-index: 2;
   position: absolute;
@@ -73,35 +60,32 @@ const DiaryTitle = styled.h3`
 const DiaryCover = styled.img`
   width: 100%;
 `;
-const DiaryBtn = styled.button`
+const DiaryBtn = styled(motion.button)`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 55px;
-  height: 55px;
+  width: 45px;
+  height: 45px;
   position: absolute;
-  top: -20px;
-  right: -20px;
+  top: -15px;
+  right: -15px;
   background-color: #e84118;
   border-radius: 50%;
 `;
 
-const ModalBox = styled.div`
+// 모달창 컴포넌트
+const ModalBox = styled(motion.div)`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  width: 800px;
-  height: 400px;
-  padding: 30px;
+  width: 600px;
+  height: 300px;
+  padding: 25px;
   ${modalBoxStyle}
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 100;
+
   span {
-    font-size: 25px;
+    font-size: 20px;
   }
   .btnBox {
     display: flex;
@@ -114,6 +98,51 @@ const ModalBox = styled.div`
     ${btnStyle}
   }
 `;
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+`;
+
+// frame-motion variants
+const btnVariants = {
+  start: {
+    scale: 0,
+  },
+  end: {
+    scale: 1,
+    transition: {
+      type: "spring",
+      bounce: 0.5,
+      duration: 1,
+    },
+  },
+  exit: {
+    scale: 0,
+  },
+};
+const modalVariants = {
+  start: {
+    opacity: 0,
+    scale: 0.5,
+    x: "-50%",
+    y: "-50%",
+  },
+  end: {
+    opacity: 1,
+    scale: 1,
+    x: "-50%",
+    y: "-50%",
+    transition: {
+      duration: 0.3,
+      ease: "easeInOut",
+    },
+  },
+};
 
 export default function HiddenDiary() {
   const [hiddenDiaries, setHiddenDiaries] = useState([]);
@@ -191,80 +220,101 @@ export default function HiddenDiary() {
     <Wrapper>
       <BtnWrapper>
         <Link to="/mypage">
-          <SolidBtn className="mb-5">
+          <TooltipButton
+            text="마이페이지"
+            btnType="solid"
+            icon={
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="#fff"
+                className="w-6 h-6"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            }
+            left="85%"
+          />
+        </Link>
+        <TooltipButton
+          text="숨김해제"
+          onClick={() => onBtnClick("notHidden")}
+          btnType="stroke"
+          icon={
+            <svg
+              width="24px"
+              height="24px"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              color="#4d9cd0"
+              strokeWidth="2"
+            >
+              <path
+                d="M3 13C6.6 5 17.4 5 21 13"
+                stroke="#4d9cd0"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></path>
+              <path
+                d="M12 17C10.3431 17 9 15.6569 9 14C9 12.3431 10.3431 11 12 11C13.6569 11 15 12.3431 15 14C15 15.6569 13.6569 17 12 17Z"
+                fill="#4d9cd0"
+                stroke="#4d9cd0"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></path>
+            </svg>
+          }
+          left="85%"
+        />
+        <TooltipButton
+          text="삭제"
+          onClick={() => onBtnClick("delete")}
+          btnType="stroke"
+          icon={
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
-              fill="#fff"
-              className="w-8 h-8"
+              fill="#4d9cd0"
+              className="w-6 h-6"
             >
               <path
                 fillRule="evenodd"
-                d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
+                d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
                 clipRule="evenodd"
               />
             </svg>
-          </SolidBtn>
-        </Link>
-
-        <StrokeBtn onClick={() => onBtnClick("notHidden")}>
-          <svg
-            width="30px"
-            height="30px"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            color="#4d9cd0"
-            strokeWidth="2"
-          >
-            <path
-              d="M3 13C6.6 5 17.4 5 21 13"
-              stroke="#4d9cd0"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            ></path>
-            <path
-              d="M12 17C10.3431 17 9 15.6569 9 14C9 12.3431 10.3431 11 12 11C13.6569 11 15 12.3431 15 14C15 15.6569 13.6569 17 12 17Z"
-              fill="#4d9cd0"
-              stroke="#4d9cd0"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            ></path>
-          </svg>
-        </StrokeBtn>
-        <StrokeBtn onClick={() => onBtnClick("delete")}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="#4d9cd0"
-            className="w-8 h-8"
-          >
-            <path
-              fillRule="evenodd"
-              d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </StrokeBtn>
+          }
+          left="85%"
+        />
       </BtnWrapper>
 
       <ContentBox>
-        <h1 className="text-5xl pb-[20px]">숨긴 일기장</h1>
+        <h1 className="text-3xl pb-[20px]">숨긴 일기장</h1>
         <DiaryBox>
           {hiddenDiaries?.map((diary) => (
             <Diary key={diary.id}>
               {showBtn === "notHidden" ? (
                 <DiaryBtn
+                  variants={btnVariants}
+                  initial="start"
+                  animate="end"
+                  exit="exit"
+                  whileHover={{ scale: 1.1 }}
                   onClick={() => {
                     setSelectedDiaryId(diary.id);
                     setShowModal(true);
                   }}
                 >
                   <svg
-                    width="30px"
-                    height="30px"
+                    width="24px"
+                    height="24px"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -291,6 +341,11 @@ export default function HiddenDiary() {
               ) : null}
               {showBtn === "delete" ? (
                 <DiaryBtn
+                  variants={btnVariants}
+                  initial="start"
+                  animate="end"
+                  exit="exit"
+                  whileHover={{ scale: 1.1 }}
                   onClick={() => {
                     setSelectedDiaryId(diary.id);
                     setShowModal(true);
@@ -300,7 +355,7 @@ export default function HiddenDiary() {
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="#fff"
-                    className="w-8 h-8"
+                    className="w-6 h-6"
                   >
                     <path
                       fillRule="evenodd"
@@ -323,27 +378,30 @@ export default function HiddenDiary() {
       </ContentBox>
 
       {showModal ? (
-        <ModalBox>
-          <h3>alert</h3>
-          <span>
-            {showBtn === "notHidden"
-              ? "일기장 숨김해제 할거니?????"
-              : showBtn === "delete"
-              ? "일기장 진짜 삭제할거니??????"
-              : null}
-          </span>
-          <div className="btnBox">
-            <button onClick={handleYesClick}>YES</button>
-            <button
-              onClick={() => {
-                setShowModal(false);
-                setSelectedDiaryId(null);
-              }}
-            >
-              NO
-            </button>
-          </div>
-        </ModalBox>
+        <>
+          <ModalBox variants={modalVariants} initial="start" animate="end">
+            <h3>alert</h3>
+            <span>
+              {showBtn === "notHidden"
+                ? "일기장을 숨김 해제 하시겠습니까?"
+                : showBtn === "delete"
+                ? "일기장을 삭제하시겠습니까?"
+                : null}
+            </span>
+            <div className="btnBox">
+              <button onClick={handleYesClick}>예</button>
+              <button
+                onClick={() => {
+                  setShowModal(false);
+                  setSelectedDiaryId(null);
+                }}
+              >
+                아니오
+              </button>
+            </div>
+          </ModalBox>
+          <Overlay />
+        </>
       ) : null}
     </Wrapper>
   );

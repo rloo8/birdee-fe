@@ -92,7 +92,6 @@ const Diary = styled.div`
   position: relative;
   width: 160px;
   height: 180px;
-  transition: transform 0.2s ease;
 `;
 const DiaryTitle = styled.h3`
   font-size: 18px;
@@ -150,7 +149,7 @@ const Overlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.4);
   z-index: 999;
 `;
 
@@ -824,14 +823,14 @@ function Home() {
                 : null}
             </span>
             <div className="btnBox">
-              <button onClick={handleYesClick}>YES</button>
+              <button onClick={handleYesClick}>예</button>
               <button
                 onClick={() => {
                   setShowModal(false);
                   setSelectedDiaryId(null);
                 }}
               >
-                NO
+                아니오
               </button>
             </div>
           </ModalBox>
