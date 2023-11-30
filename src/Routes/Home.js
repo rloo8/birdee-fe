@@ -90,6 +90,7 @@ const Diary = styled.div`
   position: relative;
   width: 200px;
   height: 230px;
+  transition: transform 0.2s ease;
 `;
 const DiaryTitle = styled.h3`
   font-size: 20px;
@@ -359,6 +360,7 @@ function Home() {
     }
 
     const diaryId = result.draggableId;
+    console.log(diaryId);
 
     if (hoveredCategory) {
       try {
@@ -381,6 +383,7 @@ function Home() {
       }
     }
   };
+  console.log(hoveredCategory);
 
   return (
     <Wrapper>
