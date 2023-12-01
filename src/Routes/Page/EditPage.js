@@ -33,7 +33,7 @@ const PageWrapper = styled.form`
   ${boxStyle}
 `;
 const PageTitle = styled.div`
-  font-size: 30px;
+  font-size: 24px;
   border-bottom: 2px solid #4d9cd0;
   padding-bottom: 10px;
   display: flex;
@@ -42,7 +42,7 @@ const PageTitle = styled.div`
 const Counter = styled.p`
   margin-top: 5px;
   color: #4d9cd0;
-  font-size: 20px;
+  font-size: 18px;
   text-align: right;
 `;
 
@@ -109,7 +109,7 @@ export default function EditPage() {
   return (
     <Wrapper>
       <SideWrapper>
-        <span className="text-3xl">
+        <span className="text-2xl">
           Date: {moment(page?.createdAt).format("YYYY.MM.DD ddd").toUpperCase()}
         </span>
         <div className="flex gap-5">
@@ -140,7 +140,7 @@ export default function EditPage() {
           placeholder="일기를 작성해주세요."
           onChange={handleCounterChange}
           maxLength={1500}
-          className="w-[100%] h-[90%] p-5 text-xl focus:outline-none"
+          className="w-[100%] h-[90%] p-5 text-md focus:outline-none"
         ></textarea>
         <Counter>{counter}/1500 자</Counter>
       </PageWrapper>

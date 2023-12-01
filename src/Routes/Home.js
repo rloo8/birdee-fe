@@ -13,6 +13,8 @@ import { useSetRecoilState } from "recoil";
 import { inviteListState } from "../Components/atoms";
 import { HOST_URL } from "../App";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import TooltipButton from "../Components/TooltipButton";
+import { motion } from "framer-motion";
 
 // styled components
 const Wrapper = styled.div`
@@ -29,22 +31,22 @@ const Wrapper = styled.div`
 const BtnWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 5px;
 `;
 const SolidBtn = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   ${solidBtnStyle}
 `;
 const StrokeBtn = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   ${stokeBtnStyle}
 `;
 
@@ -56,7 +58,7 @@ const ContentBox = styled.div`
 // 카테고리 컴포넌트
 const CategoryBox = styled.ul`
   position: absolute;
-  left: -58px;
+  left: -49px;
   bottom: 0;
   display: flex;
   flex-direction: column-reverse;
@@ -69,31 +71,35 @@ const CategoryBtn = styled.button`
   border-left: 2px solid #4d9cd0;
   border-right: 2px solid #4d9cd0;
   border-top: 2px solid #4d9cd0;
-  width: 60px;
-  padding: 15px;
+  width: 50px;
+  padding: 10px;
   writing-mode: vertical-rl;
   text-orientation: upright;
-  font-size: 20px;
+  font-size: 16px;
+  transition: background-color 0.7s, color 0.7s;
+  &:hover {
+    background-color: #4d9cd0;
+    color: #fff;
+  }
 `;
 
 // 일기장 컴포넌트
 const DiaryBox = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 70px;
-  padding: 100px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 50px;
+  padding: 80px;
   ${boxStyle}
   overflow-y: auto;
   height: 100%;
 `;
-const Diary = styled.div`
+const Diary = styled(motion.div)`
   position: relative;
-  width: 200px;
-  height: 230px;
-  transition: transform 0.2s ease;
+  width: 160px;
+  height: 180px;
 `;
 const DiaryTitle = styled.h3`
-  font-size: 20px;
+  font-size: 18px;
   text-align: center;
   z-index: 2;
   position: absolute;
@@ -104,36 +110,32 @@ const DiaryTitle = styled.h3`
 const DiaryCover = styled.img`
   width: 100%;
 `;
-const DiaryBtn = styled.button`
+const DiaryBtn = styled(motion.button)`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 55px;
-  height: 55px;
+  width: 45px;
+  height: 45px;
   position: absolute;
-  top: -20px;
-  right: -20px;
+  top: -15px;
+  right: -15px;
   background-color: #e84118;
   border-radius: 50%;
 `;
 
 // 모달창 컴포넌트
-const ModalBox = styled.div`
+const ModalBox = styled(motion.div)`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  width: 800px;
-  height: 400px;
-  padding: 30px;
+  width: 600px;
+  height: 300px;
+  padding: 25px;
   ${modalBoxStyle}
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 100;
+
   span {
-    font-size: 25px;
+    font-size: 20px;
   }
   .btnBox {
     display: flex;
@@ -146,6 +148,52 @@ const ModalBox = styled.div`
     ${btnStyle}
   }
 `;
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+`;
+
+// frame-motion variants
+const btnVariants = {
+  start: {
+    scale: 0,
+  },
+  end: {
+    scale: 1,
+    transition: {
+      type: "spring",
+      bounce: 0.5,
+      duration: 1,
+    },
+  },
+  exit: {
+    scale: 0,
+  },
+};
+const modalVariants = {
+  start: {
+    opacity: 0,
+    scale: 0.5,
+    x: "-50%",
+    y: "-50%",
+  },
+  end: {
+    opacity: 1,
+    scale: 1,
+    x: "-50%",
+    y: "-50%",
+    transition: {
+      duration: 0.3,
+      ease: "easeInOut",
+    },
+  },
+};
+
 function Home() {
   const [diaries, setDiaries] = useState([]);
   const [showBtn, setShowBtn] = useState(null);
@@ -183,7 +231,6 @@ function Home() {
           firstId: firstId,
         },
       });
-      console.log("전체 일기장 목록 조회");
 
       setDiaries(response.data.result.Diaries);
     } catch (error) {
@@ -284,20 +331,24 @@ function Home() {
   const handleCategoryClick = async (category) => {
     // 클릭한 카테고리의 ID를 state에 저장
     setSelectedCategory(category);
+    if (category) {
+      try {
+        const response = await axios.get(
+          `${HOST_URL}/category/${category.id}/diaries`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
 
-    try {
-      const response = await axios.get(
-        `${HOST_URL}/category/${category.id}/diaries`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+        if (editMode) {
+          setEditMode(false);
         }
-      );
-
-      setDiaries(response.data.result.Diaries);
-    } catch (error) {
-      console.error("fetch 오류:", error);
+        setDiaries(response.data.result.Diaries);
+      } catch (error) {
+        console.error("fetch 오류:", error);
+      }
     }
   };
 
@@ -347,27 +398,27 @@ function Home() {
       );
       console.log("카테고리 삭제 성공:", response.data);
       updateCategories();
+      setSelectedCategory(null);
+      getAllCategory();
     } catch (error) {
       console.error("카테고리 삭제 중 오류 발생:", error);
     }
   };
 
-  // 카테고리에 일기장 드래그해서 추가
+  // 일기장 드롭시
   const onDragEnd = async (result) => {
     if (!result) {
       return;
     }
 
     const diaryId = result.draggableId;
-    console.log(diaryId);
 
+    // 카테고리에 일기장 드래그해서 추가
     if (hoveredCategory) {
       try {
         const response = await axios.put(
-          `${HOST_URL}/category/${hoveredCategory}/diaries`,
-          {
-            diary_id: diaryId,
-          },
+          `${HOST_URL}/category/${hoveredCategory}/diaries/${diaryId}`,
+          {},
           {
             headers: {
               "Content-Type": "application/json",
@@ -375,10 +426,28 @@ function Home() {
             },
           }
         );
-        console.log("카테고리에 추가 성공: ", response.data.success);
+        console.log("카테고리에 추가 성공: ", response.data);
         handleCategoryClick(selectedCategory);
       } catch (error) {
         console.error("카테고리에 추가 실패: ", error);
+      }
+    }
+    // 카테고리에서 삭제
+    else {
+      try {
+        const response = await axios.delete(
+          `${HOST_URL}/category/diaries/${diaryId}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        console.log("카테고리에서 삭제 성공: ", response.data.success);
+        handleCategoryClick(selectedCategory);
+      } catch (error) {
+        console.error("카테고리에서 삭제 실패: ", error);
       }
     }
   };
@@ -386,14 +455,16 @@ function Home() {
   return (
     <Wrapper>
       <BtnWrapper>
-        <div className="flex flex-col gap-1">
-          <Link to="/mypage">
-            <SolidBtn className="mb-5">
+        <Link to="/mypage">
+          <TooltipButton
+            text="마이페이지"
+            btnType="solid"
+            icon={
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="#fff"
-                className="w-8 h-8"
+                className="w-6 h-6"
               >
                 <path
                   fillRule="evenodd"
@@ -401,15 +472,19 @@ function Home() {
                   clipRule="evenodd"
                 />
               </svg>
-            </SolidBtn>
-          </Link>
-          <Link to="/diaries/create" onClick={() => setInviteList([])}>
-            <StrokeBtn>
+            }
+          />
+        </Link>
+        <Link to="/diaries/create" onClick={() => setInviteList([])}>
+          <TooltipButton
+            text="일기장 만들기"
+            btnType="stroke"
+            icon={
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="#4d9cd0"
-                className="w-8 h-8"
+                className="w-6 h-6"
               >
                 <path
                   fillRule="evenodd"
@@ -417,12 +492,17 @@ function Home() {
                   clipRule="evenodd"
                 />
               </svg>
-            </StrokeBtn>
-          </Link>
-          <StrokeBtn onClick={() => onBtnClick("hidden")}>
+            }
+          />
+        </Link>
+        <TooltipButton
+          text="일기장 숨김"
+          btnType="stroke"
+          onClick={() => onBtnClick("hidden")}
+          icon={
             <svg
-              width="24px"
-              height="24px"
+              width="20px"
+              height="20px"
               viewBox="0 0 24 24"
               strokeWidth="3.5"
               fill="none"
@@ -458,13 +538,18 @@ function Home() {
                 strokeLinejoin="round"
               ></path>
             </svg>
-          </StrokeBtn>
-          <StrokeBtn onClick={() => onBtnClick("delete")}>
+          }
+        />
+        <TooltipButton
+          text="일기장 삭제"
+          btnType="stroke"
+          onClick={() => onBtnClick("delete")}
+          icon={
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="#4d9cd0"
-              className="w-8 h-8"
+              className="w-6 h-6"
             >
               <path
                 fillRule="evenodd"
@@ -472,62 +557,8 @@ function Home() {
                 clipRule="evenodd"
               />
             </svg>
-          </StrokeBtn>
-        </div>
-
-        {/* 페이지네이션 버튼 */}
-        <div className="flex gap-1">
-          <StrokeBtn
-            onClick={() => {
-              setFirstId(diaries[0]?.id);
-              setLastId(null);
-            }}
-          >
-            <svg
-              width="25px"
-              height="25px"
-              viewBox="2 0 25 25"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              color="#4d9cd0"
-              strokeWidth="1.5"
-            >
-              <path
-                d="M17.0282 5.2672C17.4217 4.95657 18 5.23682 18 5.73813V18.2619C18 18.7632 17.4217 19.0434 17.0282 18.7328L9.09651 12.4709C8.79223 12.2307 8.79223 11.7693 9.09651 11.5291L17.0282 5.2672Z"
-                fill="#4d9cd0"
-                stroke="#4d9cd0"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              ></path>
-            </svg>
-          </StrokeBtn>
-          <StrokeBtn
-            onClick={() => {
-              setLastId(diaries[diaries.length - 1]?.id);
-              setFirstId(null);
-            }}
-          >
-            <svg
-              width="25px"
-              height="25px"
-              viewBox="0 0 20 25"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              color="#4d9cd0"
-              strokeWidth="1.5"
-            >
-              <path
-                d="M6.97179 5.2672C6.57832 4.95657 6 5.23682 6 5.73813V18.2619C6 18.7632 6.57832 19.0434 6.97179 18.7328L14.9035 12.4709C15.2078 12.2307 15.2078 11.7693 14.9035 11.5291L6.97179 5.2672Z"
-                fill="#4d9cd0"
-                stroke="#4d9cd0"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              ></path>
-            </svg>
-          </StrokeBtn>
-        </div>
+          }
+        />
       </BtnWrapper>
 
       <ContentBox>
@@ -582,15 +613,15 @@ function Home() {
               type="text"
               value={editedCategoryName}
               onChange={(e) => setEditedCategoryName(e.target.value)}
-              className="text-4xl p-[10px] mb-[10px]"
+              className="text-2xl p-[10px] mb-[10px]"
             />
           ) : (
-            <h1 className="text-5xl pb-[20px]">
+            <h1 className="text-3xl pb-[20px]">
               {selectedCategory ? selectedCategory.cname : "ALL"}
             </h1>
           )}
 
-          <div className="flex gap-5">
+          <div className="flex gap-3">
             {editMode ? (
               <>
                 <button
@@ -613,7 +644,7 @@ function Home() {
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="#4d9cd0"
-                    className="w-9 h-9"
+                    className="w-7 h-7"
                   >
                     <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
                     <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
@@ -624,7 +655,7 @@ function Home() {
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="#4d9cd0"
-                    className="w-8 h-8"
+                    className="w-7 h-7"
                   >
                     <path
                       fillRule="evenodd"
@@ -650,22 +681,30 @@ function Home() {
                   >
                     {(magic) => (
                       <Diary
+                        drag
+                        whileDrag={{ scale: 0.5 }}
+                        dragSnapToOrigin
                         ref={magic.innerRef}
                         {...magic.dragHandleProps}
                         {...magic.draggableProps}
                       >
                         {showBtn === "hidden" ? (
                           <DiaryBtn
+                            variants={btnVariants}
+                            initial="start"
+                            animate="end"
+                            exit="exit"
+                            whileHover={{ scale: 1.1 }}
                             onClick={() => {
                               setSelectedDiaryId(diary.id);
                               setShowModal(true);
                             }}
                           >
                             <svg
-                              width="24px"
-                              height="24px"
+                              width="20px"
+                              height="20px"
                               viewBox="0 0 24 24"
-                              strokeWidth="3.5"
+                              strokeWidth="3"
                               fill="none"
                               xmlns="http://www.w3.org/2000/svg"
                               color="#fff"
@@ -673,28 +712,28 @@ function Home() {
                               <path
                                 d="M19.5 16L17.0248 12.6038"
                                 stroke="#fff"
-                                strokeWidth="3.5"
+                                strokeWidth="3"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                               ></path>
                               <path
                                 d="M12 17.5V14"
                                 stroke="#fff"
-                                strokeWidth="3.5"
+                                strokeWidth="3"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                               ></path>
                               <path
                                 d="M4.5 16L6.96895 12.6124"
                                 stroke="#fff"
-                                strokeWidth="3.5"
+                                strokeWidth="3"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                               ></path>
                               <path
                                 d="M3 8C6.6 16 17.4 16 21 8"
                                 stroke="#fff"
-                                strokeWidth="3.5"
+                                strokeWidth="3"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                               ></path>
@@ -703,6 +742,11 @@ function Home() {
                         ) : null}
                         {showBtn === "delete" ? (
                           <DiaryBtn
+                            variants={btnVariants}
+                            initial="start"
+                            animate="end"
+                            exit="exit"
+                            whileHover={{ scale: 1.1 }}
                             onClick={() => {
                               setSelectedDiaryId(diary.id);
                               setShowModal(true);
@@ -712,7 +756,7 @@ function Home() {
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 24 24"
                               fill="#fff"
-                              className="w-8 h-8"
+                              className="w-6 h-6"
                             >
                               <path
                                 fillRule="evenodd"
@@ -740,28 +784,85 @@ function Home() {
         </DragDropContext>
       </ContentBox>
 
+      {/* 페이지네이션 버튼 */}
+      <div className="flex gap-1 absolute bottom-[30px]">
+        <StrokeBtn
+          onClick={() => {
+            setFirstId(diaries[0]?.id);
+            setLastId(null);
+          }}
+        >
+          <svg
+            width="20px"
+            height="20px"
+            viewBox="2 0 25 25"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            color="#4d9cd0"
+            strokeWidth="1.5"
+          >
+            <path
+              d="M17.0282 5.2672C17.4217 4.95657 18 5.23682 18 5.73813V18.2619C18 18.7632 17.4217 19.0434 17.0282 18.7328L9.09651 12.4709C8.79223 12.2307 8.79223 11.7693 9.09651 11.5291L17.0282 5.2672Z"
+              fill="#4d9cd0"
+              stroke="#4d9cd0"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            ></path>
+          </svg>
+        </StrokeBtn>
+        <StrokeBtn
+          onClick={() => {
+            setLastId(diaries[diaries.length - 1]?.id);
+            setFirstId(null);
+          }}
+        >
+          <svg
+            width="20px"
+            height="20px"
+            viewBox="0 0 20 25"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            color="#4d9cd0"
+            strokeWidth="1.5"
+          >
+            <path
+              d="M6.97179 5.2672C6.57832 4.95657 6 5.23682 6 5.73813V18.2619C6 18.7632 6.57832 19.0434 6.97179 18.7328L14.9035 12.4709C15.2078 12.2307 15.2078 11.7693 14.9035 11.5291L6.97179 5.2672Z"
+              fill="#4d9cd0"
+              stroke="#4d9cd0"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            ></path>
+          </svg>
+        </StrokeBtn>
+      </div>
+
       {showModal ? (
-        <ModalBox>
-          <h3>alert</h3>
-          <span>
-            {showBtn === "hidden"
-              ? "일기장 숨길거니?????"
-              : showBtn === "delete"
-              ? "일기장 진짜 삭제할거니??????"
-              : null}
-          </span>
-          <div className="btnBox">
-            <button onClick={handleYesClick}>YES</button>
-            <button
-              onClick={() => {
-                setShowModal(false);
-                setSelectedDiaryId(null);
-              }}
-            >
-              NO
-            </button>
-          </div>
-        </ModalBox>
+        <>
+          <ModalBox variants={modalVariants} initial="start" animate="end">
+            <h3>alert</h3>
+            <span>
+              {showBtn === "hidden"
+                ? "일기장을 숨기시겠습니까?"
+                : showBtn === "delete"
+                ? "일기장을 삭제하시겠습니까?"
+                : null}
+            </span>
+            <div className="btnBox">
+              <button onClick={handleYesClick}>예</button>
+              <button
+                onClick={() => {
+                  setShowModal(false);
+                  setSelectedDiaryId(null);
+                }}
+              >
+                아니오
+              </button>
+            </div>
+          </ModalBox>
+          <Overlay />
+        </>
       ) : null}
     </Wrapper>
   );
