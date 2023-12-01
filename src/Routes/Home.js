@@ -337,6 +337,9 @@ function Home() {
         }
       );
 
+      if (editMode) {
+        setEditMode(false);
+      }
       setDiaries(response.data.result.Diaries);
     } catch (error) {
       console.error("fetch 오류:", error);
@@ -389,6 +392,8 @@ function Home() {
       );
       console.log("카테고리 삭제 성공:", response.data);
       updateCategories();
+      setSelectedCategory(null);
+      getAllCategory();
     } catch (error) {
       console.error("카테고리 삭제 중 오류 발생:", error);
     }
