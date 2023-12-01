@@ -106,7 +106,13 @@ function Mypage() {
 
   const navigate = useNavigate();
 
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm();
 
   // 유저 정보 조회
   useEffect(() => {
@@ -127,6 +133,57 @@ function Mypage() {
 
     fetchData();
   }, []);
+
+  // 비밀번호 확인
+  const checkPassword = async (data) => {
+    console.log(data);
+    try {
+      const response = await axios.post(
+        `${HOST_URL}/auth/check-password`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      // 비밀번호 일치 시
+      if (response.data.success) {
+        setShowModal("updatePassword");
+        setErrorMessage("");
+        setValue("password", "");
+      } else {
+        setErrorMessage("비밀번호가 올바르지 않습니다.");
+      }
+    } catch (error) {
+      console.error("fetch 오류:", error);
+    }
+  };
+  // 비밀번호 변경
+  const updatePassword = async (data) => {
+    console.log(data);
+    try {
+      const response = await axios.put(
+        `${HOST_URL}/auth/member/password`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      console.log("비밀번호 변경 성공");
+      setShowModal(null);
+      setValue("password", "");
+      setValue("password", "");
+      setErrorMessage("");
+    } catch (error) {
+      console.error("fetch 오류:", error);
+    }
+  };
 
   // 로그아웃
   const handleLogout = () => {
@@ -325,6 +382,12 @@ function Mypage() {
 
           <div className="flex flex-col w-full gap-3">
             <Box
+              onClick={() => setShowModal("checkPassword")}
+              className="cursor-pointer"
+            >
+              <span>비밀번호 변경</span>
+            </Box>
+            <Box
               onClick={() => setShowModal("logout")}
               className="cursor-pointer"
             >
@@ -420,6 +483,103 @@ function Mypage() {
             <div className="btnBox">
               <button onClick={() => setShowModal(null)}>닫기</button>
             </div>
+          </ModalBox>
+          <Overlay />
+        </>
+      ) : ShowModal === "checkPassword" ? (
+        <>
+          <ModalBox variants={modalVariants} initial="start" animate="end">
+            <form
+              onSubmit={handleSubmit(checkPassword)}
+              className="flex flex-col gap-2"
+            >
+              <div className="flex flex-col items-center gap-2">
+                <label htmlFor="password" className="text-md">
+                  비밀번호 변경을 위해 기존 비밀번호를 입력해주세요.
+                </label>
+                <input
+                  {...register("password", {
+                    required: "비밀번호를 입력해주세요",
+                  })}
+                  id="password"
+                  type="password"
+                  className="p-2 w-[80%]"
+                />
+              </div>
+              <p className="text-red-500 text-center text-sm">{errorMessage}</p>
+
+              <div className="btnBox w-full pt-5">
+                <button type="submit">확인</button>
+                <button
+                  onClick={() => {
+                    setShowModal(null);
+                    setErrorMessage("");
+                    setValue("password", "");
+                  }}
+                >
+                  취소
+                </button>
+              </div>
+            </form>
+          </ModalBox>
+          <Overlay />
+        </>
+      ) : ShowModal === "updatePassword" ? (
+        <>
+          <ModalBox variants={modalVariants} initial="start" animate="end">
+            <form
+              onSubmit={handleSubmit(updatePassword)}
+              className="flex flex-col gap-2"
+            >
+              <div className="flex flex-col items-center gap-2">
+                <label htmlFor="password" className="text-md">
+                  새로운 비밀번호를 입력해주세요.
+                </label>
+                <input
+                  {...register("password", {
+                    required: "비밀번호를 입력해주세요",
+                  })}
+                  id="password"
+                  type="password"
+                  className="p-2 w-[80%]"
+                />
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <label htmlFor="passwordConfirmation" className="text-md">
+                  새로운 비밀번호를 한번 더 입력해주세요.
+                </label>
+                <input
+                  {...register("passwordConfirmation", {
+                    required: "비밀번호를 입력해주세요",
+                    validate: {
+                      passwordConfirmation: (value) =>
+                        value === watch("password") ||
+                        "비밀번호가 일치하지 않습니다.",
+                    },
+                  })}
+                  id="passwordConfirmation"
+                  type="password"
+                  className="p-2 w-[80%]"
+                />
+              </div>
+              <p className="text-red-500 text-center text-sm">
+                {errors?.passwordConfirmation?.message}
+              </p>
+
+              <div className="btnBox w-full pt-5">
+                <button type="submit">변경</button>
+                <button
+                  onClick={() => {
+                    setShowModal(null);
+                    setErrorMessage("");
+                    setValue("password", "");
+                    setValue("passwordConfirmation", "");
+                  }}
+                >
+                  취소
+                </button>
+              </div>
+            </form>
           </ModalBox>
           <Overlay />
         </>
