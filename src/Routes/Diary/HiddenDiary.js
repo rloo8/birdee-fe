@@ -1,11 +1,5 @@
 import styled from "styled-components";
-import {
-  boxStyle,
-  btnStyle,
-  modalBoxStyle,
-  solidBtnStyle,
-  stokeBtnStyle,
-} from "../../styles/commonStyles";
+import { boxStyle, btnStyle, modalBoxStyle } from "../../styles/commonStyles";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -237,7 +231,6 @@ export default function HiddenDiary() {
                 />
               </svg>
             }
-            left="100%"
           />
         </Link>
         <TooltipButton
@@ -271,7 +264,6 @@ export default function HiddenDiary() {
               ></path>
             </svg>
           }
-          left="100%"
         />
         <TooltipButton
           text="삭제"
@@ -291,7 +283,6 @@ export default function HiddenDiary() {
               />
             </svg>
           }
-          left="100%"
         />
       </BtnWrapper>
 

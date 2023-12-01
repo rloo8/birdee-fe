@@ -29,6 +29,7 @@ const Tooltip = styled(motion.div)`
   white-space: nowrap;
   position: absolute;
   top: 20%;
+  left: 100%;
   transform: translate(10px, -50%);
   background-color: #fff;
   color: #333;
@@ -48,7 +49,7 @@ const Tooltip = styled(motion.div)`
   }
 `;
 
-const TooltipButton = ({ text, onClick, icon, btnType, left }) => {
+const TooltipButton = ({ text, onClick, icon, btnType }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
@@ -76,7 +77,6 @@ const TooltipButton = ({ text, onClick, icon, btnType, left }) => {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 10 }}
           exit={{ opacity: 0, x: 20 }}
-          className={`left-[${left}]`}
         >
           {text}
         </Tooltip>

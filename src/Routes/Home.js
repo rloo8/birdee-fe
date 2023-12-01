@@ -450,7 +450,6 @@ function Home() {
                 />
               </svg>
             }
-            left="100%"
           />
         </Link>
         <Link to="/diaries/create" onClick={() => setInviteList([])}>
@@ -471,7 +470,6 @@ function Home() {
                 />
               </svg>
             }
-            left="100%"
           />
         </Link>
         <TooltipButton
@@ -518,7 +516,6 @@ function Home() {
               ></path>
             </svg>
           }
-          left="100%"
         />
         <TooltipButton
           text="일기장 삭제"
@@ -538,7 +535,6 @@ function Home() {
               />
             </svg>
           }
-          left="100%"
         />
       </BtnWrapper>
 

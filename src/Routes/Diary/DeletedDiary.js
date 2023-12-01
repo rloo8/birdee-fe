@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { boxStyle, solidBtnStyle } from "../../styles/commonStyles";
+import { boxStyle } from "../../styles/commonStyles";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -99,7 +99,6 @@ export default function DeletedDiary() {
                 />
               </svg>
             }
-            left="100%"
           />
         </Link>
       </BtnWrapper>

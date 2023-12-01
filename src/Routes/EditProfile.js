@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { boxStyle, solidBtnStyle } from "../styles/commonStyles";
+import { boxStyle } from "../styles/commonStyles";
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -146,7 +146,6 @@ export default function EditProfile() {
                 />
               </svg>
             }
-            left="100%"
           />
         </Link>
       </Btn>

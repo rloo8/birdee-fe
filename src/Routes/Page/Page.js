@@ -22,6 +22,7 @@ const SideWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding-top: 60px;
 `;
 const WriteBtn = styled.button`
   width: 100%;
@@ -180,30 +181,31 @@ export default function Page() {
 
   return (
     <Wrapper>
+      <div className="absolute">
+        <TooltipButton
+          text="일기장"
+          btnType="solid"
+          onClick={() => navigate(`/diaries/${params.diary_id}/pages`)}
+          icon={
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 25 25"
+              strokeWidth="2"
+              stroke="#fff"
+              className="w-6 h-6 cursor-pointer"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+              />
+            </svg>
+          }
+        />
+      </div>
       <SideWrapper>
         <div className="flex flex-col gap-3">
-          <TooltipButton
-            text="일기장"
-            btnType="solid"
-            onClick={() => navigate(`/diaries/${params.diary_id}/pages`)}
-            icon={
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 25 25"
-                strokeWidth="2"
-                stroke="#fff"
-                className="w-6 h-6 cursor-pointer"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-                />
-              </svg>
-            }
-            left="22%"
-          />
           <span className="text-2xl">
             Date:{" "}
             {moment(page.createdAt).format("YYYY.MM.DD ddd").toUpperCase()}
