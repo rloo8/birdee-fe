@@ -76,6 +76,11 @@ const CategoryBtn = styled.button`
   writing-mode: vertical-rl;
   text-orientation: upright;
   font-size: 16px;
+  transition: background-color 0.7s, color 0.7s;
+  &:hover {
+    background-color: #4d9cd0;
+    color: #fff;
+  }
 `;
 
 // 일기장 컴포넌트
@@ -88,7 +93,7 @@ const DiaryBox = styled.div`
   overflow-y: auto;
   height: 100%;
 `;
-const Diary = styled.div`
+const Diary = styled(motion.div)`
   position: relative;
   width: 160px;
   height: 180px;
@@ -326,23 +331,24 @@ function Home() {
   const handleCategoryClick = async (category) => {
     // 클릭한 카테고리의 ID를 state에 저장
     setSelectedCategory(category);
+    if (category) {
+      try {
+        const response = await axios.get(
+          `${HOST_URL}/category/${category.id}/diaries`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
 
-    try {
-      const response = await axios.get(
-        `${HOST_URL}/category/${category.id}/diaries`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+        if (editMode) {
+          setEditMode(false);
         }
-      );
-
-      if (editMode) {
-        setEditMode(false);
+        setDiaries(response.data.result.Diaries);
+      } catch (error) {
+        console.error("fetch 오류:", error);
       }
-      setDiaries(response.data.result.Diaries);
-    } catch (error) {
-      console.error("fetch 오류:", error);
     }
   };
 
@@ -399,7 +405,7 @@ function Home() {
     }
   };
 
-  // 카테고리에 일기장 드래그해서 추가
+  // 일기장 드롭시
   const onDragEnd = async (result) => {
     if (!result) {
       return;
@@ -407,13 +413,12 @@ function Home() {
 
     const diaryId = result.draggableId;
 
+    // 카테고리에 일기장 드래그해서 추가
     if (hoveredCategory) {
       try {
         const response = await axios.put(
-          `${HOST_URL}/category/${hoveredCategory}/diaries`,
-          {
-            diary_id: diaryId,
-          },
+          `${HOST_URL}/category/${hoveredCategory}/diaries/${diaryId}`,
+          {},
           {
             headers: {
               "Content-Type": "application/json",
@@ -421,10 +426,28 @@ function Home() {
             },
           }
         );
-        console.log("카테고리에 추가 성공: ", response.data.success);
+        console.log("카테고리에 추가 성공: ", response.data);
         handleCategoryClick(selectedCategory);
       } catch (error) {
         console.error("카테고리에 추가 실패: ", error);
+      }
+    }
+    // 카테고리에서 삭제
+    else {
+      try {
+        const response = await axios.delete(
+          `${HOST_URL}/category/diaries/${diaryId}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        console.log("카테고리에서 삭제 성공: ", response.data.success);
+        handleCategoryClick(selectedCategory);
+      } catch (error) {
+        console.error("카테고리에서 삭제 실패: ", error);
       }
     }
   };
@@ -658,6 +681,9 @@ function Home() {
                   >
                     {(magic) => (
                       <Diary
+                        drag
+                        whileDrag={{ scale: 0.5 }}
+                        dragSnapToOrigin
                         ref={magic.innerRef}
                         {...magic.dragHandleProps}
                         {...magic.draggableProps}
