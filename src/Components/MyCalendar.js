@@ -1,11 +1,8 @@
-import axios from "axios";
 import moment from "moment/moment";
 import React, { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import { HOST_URL } from "../App";
 
 const CalendarContainer = styled.div`
   .react-calendar {
@@ -16,7 +13,7 @@ const CalendarContainer = styled.div`
   .react-calendar__tile--active {
     color: #4d9cd0;
     font-weight: bold;
-    background: #f2dd98;
+    background: #fff;
   }
   .react-calendar__navigation {
     background: #4d9cd0;
@@ -51,50 +48,37 @@ const CalendarContainer = styled.div`
 const Dot = styled.div`
   height: 8px;
   width: 8px;
-  background-color: #f87171;
   border-radius: 50%;
 `;
 
-function MyCalendar({ selectedPageId, setSelectedPageId }) {
-  const [pages, setPages] = useState([]);
-  const [uploadDates, setUploadDates] = useState([]);
-
-  const params = useParams();
+function MyCalendar({ diary, pages, colors, setSelectedPageId }) {
   const date = new Date();
-
-  // 페이지 목록 조회
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${HOST_URL}/diaries/${params.diary_id}/pages`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-        setPages(response.data.data.pages);
-
-        // 페이지 업로드 날짜 배열
-        const extractedUploadDates = response.data.data.pages.map((page) =>
-          moment(page.created_at).format("YYYY-MM-DD")
-        );
-        setUploadDates(extractedUploadDates);
-      } catch (error) {
-        console.error("fetch 오류:", error);
-      }
-    };
-
-    fetchData();
-  }, [params.diary_id]);
 
   // 업로드 날짜 확인 후, 캘린더에 dot 표시
   const uploadContent = ({ date }) => {
     const formatDate = moment(date).format("YYYY-MM-DD");
 
-    const hasUploadContent = uploadDates.includes(formatDate);
-    return hasUploadContent ? <Dot /> : null;
+    // 해당 날짜에 업로드된 페이지들의 user 색상 가져오기
+    const userColors = pages
+      ?.filter(
+        (page) =>
+          !page.deleted &&
+          moment(page.created_at).format("YYYY-MM-DD") === formatDate
+      )
+      .map((page) => {
+        const userIndex = diary.users.findIndex(
+          (user) => user.user_id === page.user_id
+        );
+        return colors[userIndex];
+      });
+
+    return (
+      <div style={{ display: "flex", gap: "2px" }}>
+        {userColors?.map((color, index) => (
+          <Dot key={index} style={{ backgroundColor: color }} />
+        ))}
+      </div>
+    );
   };
 
   // 클릭 이벤트 핸들러

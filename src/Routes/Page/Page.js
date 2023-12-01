@@ -161,9 +161,9 @@ export default function Page() {
   // 페이지 삭제 함수
   const handleDeleteClick = async () => {
     try {
-      await axios.delete(
+      await axios.put(
         `${HOST_URL}/diaries/${params.diary_id}/pages/${params.page_id}`,
-        {},
+        { deleted: true },
         {
           headers: {
             "Content-Type": "application/json",

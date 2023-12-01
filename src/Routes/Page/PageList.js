@@ -126,7 +126,7 @@ export default function PageList() {
   const activeUserIndex = diary?.pages?.length % diary?.users?.length;
 
   // 컬러 배열
-  const color = ["#E4DBA4", "#BAC7AF", "#EACFCB", "#AACAD1"];
+  const colors = ["#E4DBA4", "#BAC7AF", "#EACFCB", "#AACAD1"];
 
   return (
     <Wrapper>
@@ -190,7 +190,9 @@ export default function PageList() {
             </Link>
           )}
           <MyCalendar
-            selectedPageId={selectedPageId}
+            diary={diary}
+            pages={pages}
+            colors={colors}
             setSelectedPageId={setSelectedPageId}
           />
         </div>
@@ -203,7 +205,7 @@ export default function PageList() {
             const userIndex = diary.users.findIndex(
               (user) => user.user_id === page.user_id
             );
-            const boxColor = color[userIndex];
+            const boxColor = colors[userIndex];
 
             return (
               <Link
