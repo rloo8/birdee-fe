@@ -180,9 +180,18 @@ function CreateDiary() {
     e.preventDefault();
 
     // 존재하는 아이디인지 체크
-    const response = await axios.post(`${HOST_URL}/auth/check-user`, {
-      user_id: invitedUser,
-    });
+    const response = await axios.post(
+      `${HOST_URL}/auth/check-user`,
+      {
+        user_id: invitedUser,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
 
     if (response.data.success) {
       if (invitedUser && inviteList.length < 3) {
@@ -193,7 +202,7 @@ function CreateDiary() {
         setInviteError("최대 3명까지만 초대 가능합니다.");
       }
     } else {
-      setInviteError("존재하지 않는 아이디입니다.");
+      setInviteError(response.data.message);
     }
   };
 
@@ -372,6 +381,7 @@ function CreateDiary() {
                 setShowModal(false);
                 setValue("invitedUsers", inviteList);
                 setValue("color", diaryColor);
+                setInviteError("");
               }}
             >
               완료
