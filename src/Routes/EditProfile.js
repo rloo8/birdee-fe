@@ -40,9 +40,9 @@ const Box = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px;
+  padding: 13px;
   ${boxStyle}
-  font-size: 20px;
+  font-size: 18px;
   label {
     color: #4d9cd0;
   }
@@ -75,6 +75,7 @@ export default function EditProfile() {
         setProfileImg(response.data.data.image);
 
         setValue("name", response.data.data.name);
+        setValue("message", response.data.data.message);
         setValue("birth", response.data.data.birth);
         setValue("email", response.data.data.email);
         setValue("allow_random", response.data.data.allow_random);
@@ -107,6 +108,7 @@ export default function EditProfile() {
       }
 
       formData.append("name", watch("name"));
+      formData.append("message", watch("message"));
       formData.append("birth", watch("birth"));
       formData.append("email", watch("email"));
       formData.append("allow_random", watch("allow_random"));
@@ -184,18 +186,18 @@ export default function EditProfile() {
 
         <h2 className="text-4xl">My Profile</h2>
 
-        <label className="relative w-56 h-56 m-3 flex items-center justify-center border-2 border-dashed rounded-md border-gray-300 hover:border-[#4d9cd0] hover:text-[#4d9cd0] cursor-pointer">
+        <label className="relative w-48 h-48 m-3 flex items-center justify-center border-2 border-dashed rounded-md border-gray-300 hover:border-[#4d9cd0] hover:text-[#4d9cd0] cursor-pointer">
           {profileImg ? (
             <img
               src={profileImg}
               alt="profile"
-              className="w-48 h-48 object-cover"
+              className="w-40 h-40 object-cover"
             />
           ) : (
             <img
               src={`https://stbirdee.blob.core.windows.net/images/default_profileImg.png`}
               alt="profile"
-              className="w-48 h-48 object-cover"
+              className="w-40 h-40 object-cover"
             />
           )}
           <input
@@ -236,6 +238,10 @@ export default function EditProfile() {
         <Box>
           <label htmlFor="name">name</label>
           <input {...register("name")} type="text" id="name" />
+        </Box>
+        <Box>
+          <label htmlFor="message">message</label>
+          <input {...register("message")} type="text" id="message" />
         </Box>
         <Box>
           <label htmlFor="birth">birth</label>
