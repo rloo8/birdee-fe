@@ -46,7 +46,6 @@ const PageBox = styled.div`
 const PageTitle = styled.div`
   display: flex;
   justify-content: space-between;
-  background-color: #bac7af;
   padding: 10px 20px;
 `;
 const PageContent = styled.div`
@@ -110,7 +109,7 @@ export default function PageList() {
             },
           }
         );
-        console.log(response.data.data);
+        console.log(response.data.data.pages);
         setDiary(response.data.data);
         setPages(response.data.data.pages);
       } catch (error) {
@@ -168,6 +167,11 @@ export default function PageList() {
 
   // 컬러 배열
   const colors = ["#E4DBA4", "#BAC7AF", "#EACFCB", "#AACAD1"];
+
+  // 오늘 날짜 정보
+  const date = new Date();
+  const today = moment(date).format("YYYY-MM-DD");
+  console.log(today);
 
   return (
     <Wrapper>
@@ -250,20 +254,21 @@ export default function PageList() {
           </ul>
         </div>
         <div className="flex flex-col gap-5">
-          {diary.deleted !== "undeleted" ? null : (
-            <Link to={`create`}>
-              <WriteBtn
-                style={{
-                  display:
-                    user.name === diary.users[activeUserIndex].name
-                      ? "inline-block"
-                      : "none",
-                }}
-              >
-                My turn! 글쓰기
-              </WriteBtn>
-            </Link>
-          )}
+          {diary.deleted === "undeleted" &&
+            moment(pages[0]?.created_at).format("YYYY-MM-DD") !== today && (
+              <Link to={`create`}>
+                <WriteBtn
+                  style={{
+                    display:
+                      user.name === diary.users[activeUserIndex].name
+                        ? "inline-block"
+                        : "none",
+                  }}
+                >
+                  My turn! 글쓰기
+                </WriteBtn>
+              </Link>
+            )}
           <MyCalendar
             diary={diary}
             pages={pages}
@@ -281,6 +286,7 @@ export default function PageList() {
               (user) => user.user_id === page.user_id
             );
             const boxColor = colors[userIndex];
+            console.log(diary.users);
 
             return (
               <Link
