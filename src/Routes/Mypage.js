@@ -165,7 +165,6 @@ function Mypage() {
 
   // 비밀번호 확인
   const checkPassword = async (data) => {
-    console.log(data);
     try {
       const response = await axios.post(
         `${HOST_URL}/auth/check-password`,
@@ -192,7 +191,6 @@ function Mypage() {
   };
   // 비밀번호 변경
   const updatePassword = async (data) => {
-    console.log(data);
     try {
       const response = await axios.put(
         `${HOST_URL}/auth/member/password`,
