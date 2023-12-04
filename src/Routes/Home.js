@@ -19,7 +19,7 @@ import { motion } from "framer-motion";
 // styled components
 const Wrapper = styled.div`
   display: flex;
-  justify-content: space-between;
+  gap: 250px;
   padding: 30px;
   height: 100vh;
   ::-webkit-scrollbar {
@@ -51,8 +51,24 @@ const StrokeBtn = styled.button`
 `;
 
 const ContentBox = styled.div`
-  width: 80%;
+  width: 1000px;
   position: relative;
+`;
+
+const PagenationBox = styled.div`
+  display: flex;
+  gap: 5px;
+  position: absolute;
+  bottom: 30px;
+
+  button:hover {
+    transition: background-color 0.5s, color 0.5s;
+    background-color: #4d9cd0;
+    path {
+      fill: #fff;
+      stroke: #fff;
+    }
+  }
 `;
 
 // 카테고리 컴포넌트
@@ -127,15 +143,15 @@ const DiaryBtn = styled(motion.button)`
 const ModalBox = styled(motion.div)`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
-  width: 600px;
-  height: 300px;
+  width: 540px;
+  height: 250px;
   padding: 25px;
   ${modalBoxStyle}
 
   span {
-    font-size: 20px;
+    font-size: 25px;
   }
   .btnBox {
     display: flex;
@@ -621,9 +637,13 @@ function Home() {
             </h1>
           )}
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 items-center">
             {editMode ? (
               <>
+                <span className="text-xs">
+                  일기장 드래그 앤 드롭으로 카테고리에서 추가, 삭제할 수
+                  있습니다.
+                </span>
                 <button
                   onClick={handleEditSubmit}
                   className="bg-[#4d9cd0] text-white p-2"
@@ -785,7 +805,7 @@ function Home() {
       </ContentBox>
 
       {/* 페이지네이션 버튼 */}
-      <div className="flex gap-1 absolute bottom-[30px]">
+      <PagenationBox className="">
         <StrokeBtn
           onClick={() => {
             setFirstId(diaries[0]?.id);
@@ -836,18 +856,30 @@ function Home() {
             ></path>
           </svg>
         </StrokeBtn>
-      </div>
+      </PagenationBox>
 
       {showModal ? (
         <>
           <ModalBox variants={modalVariants} initial="start" animate="end">
-            <h3>alert</h3>
             <span>
-              {showBtn === "hidden"
-                ? "일기장을 숨기시겠습니까?"
-                : showBtn === "delete"
-                ? "일기장을 삭제하시겠습니까?"
-                : null}
+              {showBtn === "hidden" ? (
+                <div className="text-center">
+                  <h5>일기장을 숨기시겠습니까?</h5>
+                  <h6 className="text-gray-500 text-sm">
+                    숨긴 일기장은 마이페이지에서 확인 가능합니다.
+                  </h6>
+                </div>
+              ) : showBtn === "delete" ? (
+                <div className="text-center">
+                  <h4>일기장을 삭제하시겠습니까?</h4>
+                  <h5 className="text-red-500 text-xs mt-3">
+                    삭제한 일기장은 복구할 수 없으며, 7일간 휴지통에 보관됩니다.
+                    <br />
+                    일기장 삭제시, 일기장을 공유하는 사용자의 일기장도 함께
+                    삭제됩니다.
+                  </h5>
+                </div>
+              ) : null}
             </span>
             <div className="btnBox">
               <button onClick={handleYesClick}>예</button>

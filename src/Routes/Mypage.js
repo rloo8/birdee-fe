@@ -47,6 +47,23 @@ const Box = styled.div`
   }
 `;
 
+const GrayBox = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px;
+  background-color: #fff;
+  border: 2px solid #ddd;
+  span {
+    font-size: 18px;
+    color: #999;
+  }
+  span:nth-child(2) {
+    color: #000;
+  }
+`;
+
 const ModalBox = styled(motion.div)`
   display: flex;
   flex-direction: column;
@@ -367,7 +384,7 @@ function Mypage() {
             </Link>
             <Link to="/diaries/deleted" className="w-full">
               <Box>
-                <span>삭제한 일기장</span>
+                <span>휴지통</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 25 25"
@@ -385,24 +402,24 @@ function Mypage() {
           </div>
 
           <div className="flex flex-col w-full gap-3">
-            <Box
+            <GrayBox
               onClick={() => setShowModal("checkPassword")}
               className="cursor-pointer"
             >
               <span>비밀번호 변경</span>
-            </Box>
-            <Box
+            </GrayBox>
+            <GrayBox
               onClick={() => setShowModal("logout")}
               className="cursor-pointer"
             >
               <span>LOGOUT</span>
-            </Box>
-            <Box
+            </GrayBox>
+            <GrayBox
               onClick={() => setShowModal("delete")}
               className="cursor-pointer"
             >
               <span>회원탈퇴</span>
-            </Box>
+            </GrayBox>
           </div>
         </BoxWrapper>
       </div>

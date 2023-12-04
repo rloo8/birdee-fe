@@ -12,8 +12,7 @@ import { motion } from "framer-motion";
 // styled components
 const Wrapper = styled.div`
   display: flex;
-  justify-content: space-between;
-  gap: 20px;
+  gap: 50px;
   padding: 30px;
   height: 100vh;
   ::-webkit-scrollbar {
@@ -34,7 +33,7 @@ const WriteBtn = styled.button`
 
 const PageWrapper = styled.div`
   margin-top: 40px;
-  width: 60%;
+  width: 1000px;
   padding: 30px;
   overflow-y: auto;
   height: 100%;

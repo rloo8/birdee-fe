@@ -84,7 +84,7 @@ const ModalBox = styled(motion.div)`
   justify-content: space-between;
   align-items: center;
   width: 550px;
-  height: 500px;
+  height: 450px;
   padding: 30px;
   ${modalBoxStyle}
 `;
@@ -259,21 +259,21 @@ function CreateDiary() {
           </div>
         ) : null}
         <span>
-          일기장 생성 시 초대한 친구에게 알림이 갑니다.
+          일기장을 만들면 초대한 친구들의 메일에 초대장을 보냅니다.
           <br />
-          친구가 초대를 받으면 그때부터 일기를 작성할 수 있습니다.
+          모든 친구들이 초대를 받으면 그때부터 일기를 작성할 수 있어요.
           <br />
           <br />
-          일기는 친구와 번갈아가면서만 작성 가능합니다.
+          일기는 하루에 하나만 쓸 수 있으며,
           <br />
-          일기는 최대 하루에 한 편만 작성 가능합니다.
+          초대 받은 순서대로 작성할 수 있어요.
         </span>
         <form
           onSubmit={handleSubmit(onCreateClick)}
           className="flex flex-col items-center gap-5"
         >
           <div>
-            <span>일기 내용 수정, 삭제 가능 여부를 체크해주세요.</span>
+            <span>일기 수정, 삭제 가능 여부를 체크해주세요.</span>
             <div className="flex justify-center items-center gap-3">
               <input
                 {...register("is_editable")}
@@ -281,7 +281,7 @@ function CreateDiary() {
                 id="edit"
                 className="w-5 h-5"
               />
-              <label htmlFor="edit">지우기 가능(일기 수정)</label>
+              <label htmlFor="edit">일기 수정 가능</label>
             </div>
             <div className="flex justify-center items-center gap-3">
               <input
@@ -290,7 +290,7 @@ function CreateDiary() {
                 id="delete"
                 className="w-5 h-5"
               />
-              <label htmlFor="delete">찢기 가능(일기 삭제)</label>
+              <label htmlFor="delete">일기 삭제 가능</label>
             </div>
           </div>
 
@@ -372,7 +372,12 @@ function CreateDiary() {
                   id="random"
                   className="w-5 h-5"
                 />
-                <label htmlFor="random">랜덤 친구와 일기 쓰기</label>
+                <label htmlFor="random ">
+                  랜덤 친구와 일기 쓰기
+                  <p className="text-xs text-gray-500">
+                    모르는 친구와 일기를 쓸 수 있어요
+                  </p>
+                </label>
               </div>
             </form>
 
