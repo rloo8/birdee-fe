@@ -11,7 +11,7 @@ import TooltipButton from "../../Components/TooltipButton";
 
 const Wrapper = styled.div`
   display: flex;
-  justify-content: space-between;
+  gap: 50px;
   padding: 30px;
   height: 100vh;
   ::-webkit-scrollbar {

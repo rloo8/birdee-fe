@@ -36,11 +36,28 @@ const Box = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px;
+  padding: 13px;
   ${boxStyle}
   span {
-    font-size: 20px;
+    font-size: 18px;
     color: #4d9cd0;
+  }
+  span:nth-child(2) {
+    color: #000;
+  }
+`;
+
+const GrayBox = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px;
+  background-color: #fff;
+  border: 2px solid #ddd;
+  span {
+    font-size: 18px;
+    color: #999;
   }
   span:nth-child(2) {
     color: #000;
@@ -272,13 +289,17 @@ function Mypage() {
             <img
               src={`https://stbirdee.blob.core.windows.net/images/default_profileImg.png`}
               alt="profile"
-              className="w-48 h-48 object-cover"
+              className="w-40 h-40 object-cover"
             />
           )}
 
           <Box>
             <span>name</span>
             <span>{user.name}</span>
+          </Box>
+          <Box>
+            <span>message</span>
+            <span>{user.message}</span>
           </Box>
           <Box>
             <span>birth</span>
@@ -289,10 +310,6 @@ function Mypage() {
             <span>{user.email}</span>
           </Box>
           <Box>
-            <span>작성한 일기</span>
-            <span>{user.pages_count}</span>
-          </Box>
-          <Box>
             <span>랜덤 일기장 초대</span>
             <span>{user.allow_random ? "허용" : "비허용"}</span>
           </Box>
@@ -300,6 +317,10 @@ function Mypage() {
 
         <BoxWrapper className="flex flex-col">
           <div className="flex flex-col w-full gap-3">
+            <Box>
+              <span>작성한 일기 수</span>
+              <span>{user.pages_count}</span>
+            </Box>
             <Box
               onClick={() => setShowModal("invite")}
               className="cursor-pointer"
@@ -309,7 +330,7 @@ function Mypage() {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="#4d9cd0"
-                className="w-7 h-7"
+                className="w-6 h-6"
               >
                 <path
                   fillRule="evenodd"
@@ -322,9 +343,9 @@ function Mypage() {
               <Box>
                 <span>숨긴 일기장</span>
                 <svg
-                  width="25px"
-                  height="25px"
-                  viewBox="0 0 24 24"
+                  width="23px"
+                  height="23px"
+                  viewBox="0 0 28 28"
                   strokeWidth="3"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -363,12 +384,12 @@ function Mypage() {
             </Link>
             <Link to="/diaries/deleted" className="w-full">
               <Box>
-                <span>삭제한 일기장</span>
+                <span>휴지통</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 25 25"
                   fill="#4d9cd0"
-                  className="w-7 h-7"
+                  className="w-6 h-6"
                 >
                   <path
                     fillRule="evenodd"
@@ -381,24 +402,24 @@ function Mypage() {
           </div>
 
           <div className="flex flex-col w-full gap-3">
-            <Box
+            <GrayBox
               onClick={() => setShowModal("checkPassword")}
               className="cursor-pointer"
             >
               <span>비밀번호 변경</span>
-            </Box>
-            <Box
+            </GrayBox>
+            <GrayBox
               onClick={() => setShowModal("logout")}
               className="cursor-pointer"
             >
               <span>LOGOUT</span>
-            </Box>
-            <Box
+            </GrayBox>
+            <GrayBox
               onClick={() => setShowModal("delete")}
               className="cursor-pointer"
             >
               <span>회원탈퇴</span>
-            </Box>
+            </GrayBox>
           </div>
         </BoxWrapper>
       </div>
