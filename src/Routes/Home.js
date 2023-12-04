@@ -104,6 +104,7 @@ const CategoryBtn = styled.button`
 const DiaryBox = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  justify-items: center;
   gap: 50px;
   padding: 80px;
   ${boxStyle}
