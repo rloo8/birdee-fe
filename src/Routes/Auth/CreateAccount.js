@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { boxStyle, btnStyle } from "../../styles/commonStyles";
+import { activeBtnStyle, boxStyle, btnStyle } from "../../styles/commonStyles";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -42,6 +42,9 @@ const CreateInput = styled.div`
 const CreateBtn = styled.button`
   margin-top: 20px;
   ${btnStyle};
+  &:active {
+    ${activeBtnStyle}
+  }
 `;
 
 export default function CreateAccount() {
@@ -79,7 +82,7 @@ export default function CreateAccount() {
     try {
       e.preventDefault();
 
-      const response = await axios.post(`${HOST_URL}/auth/check-user`, {
+      const response = await axios.post(`${HOST_URL}/auth/check-user-id`, {
         user_id: watch("user_id"),
       });
       setIdValidation(response.data.success);

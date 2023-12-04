@@ -1,5 +1,10 @@
 import styled from "styled-components";
-import { boxStyle, btnStyle, modalBoxStyle } from "../styles/commonStyles";
+import {
+  activeBtnStyle,
+  boxStyle,
+  btnStyle,
+  modalBoxStyle,
+} from "../styles/commonStyles";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRecoilState } from "recoil";
@@ -59,6 +64,9 @@ const DiaryTitleInput = styled.input`
 const UserInviteBtn = styled.button`
   ${btnStyle}
   background-color: #edece8;
+  &:active {
+    ${activeBtnStyle}
+  }
 `;
 
 const CreateBox = styled.div`
@@ -76,6 +84,9 @@ const CreateBox = styled.div`
 const CreateBtn = styled.button`
   width: 40%;
   ${btnStyle}
+  &:active {
+    ${activeBtnStyle}
+  }
 `;
 
 const ModalBox = styled(motion.div)`

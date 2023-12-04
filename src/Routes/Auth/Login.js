@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { boxStyle, btnStyle } from "../../styles/commonStyles";
+import { activeBtnStyle, boxStyle, btnStyle } from "../../styles/commonStyles";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -39,6 +39,9 @@ const LoginInput = styled.div`
 `;
 const LoginBtn = styled.button`
   ${btnStyle};
+  &:active {
+    ${activeBtnStyle}
+  }
 `;
 
 export default function Login() {

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { boxStyle, btnStyle } from "../../styles/commonStyles";
+import { activeBtnStyle, boxStyle, btnStyle } from "../../styles/commonStyles";
 import MyCalendar from "../../Components/MyCalendar";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -29,6 +29,9 @@ const SideWrapper = styled.div`
 const WriteBtn = styled.button`
   width: 100%;
   ${btnStyle}
+  &:active {
+    ${activeBtnStyle}
+  }
 `;
 
 const PageWrapper = styled.div`

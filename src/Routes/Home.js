@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import {
+  activeBtnStyle,
   boxStyle,
   btnStyle,
   modalBoxStyle,
@@ -162,6 +163,13 @@ const ModalBox = styled(motion.div)`
   button {
     width: 100%;
     ${btnStyle}
+    transition: background-color 0.2s, color 0.2s;
+    &:hover {
+      background-color: #a0c4ff;
+    }
+    &:active {
+      ${activeBtnStyle}
+    }
   }
 `;
 const Overlay = styled.div`
