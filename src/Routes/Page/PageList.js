@@ -255,7 +255,8 @@ export default function PageList() {
         </div>
         <div className="flex flex-col gap-5">
           {diary.deleted === "undeleted" &&
-            moment(pages[0]?.created_at).format("YYYY-MM-DD") !== today && (
+            (pages[0]?.created_at === undefined ||
+              moment(pages[0]?.created_at).format("YYYY-MM-DD") !== today) && (
               <Link to={`create`}>
                 <WriteBtn
                   style={{
