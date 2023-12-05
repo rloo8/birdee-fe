@@ -9,12 +9,20 @@ border: 2px solid #4d9cd0;
 `;
 
 export const btnStyle = `
-padding: 15px 30px;
-font-size: 30px;
+padding: 10px 15px;
+font-size: 20px;
 color: #4d9cd0;
 background-color: #f2dd98;
-border-right: 5px solid #4d9cd0;
-border-bottom: 5px solid #4d9cd0;
+border-right: 4px solid #4d9cd0;
+border-bottom: 4px solid #4d9cd0;
+`;
+
+export const activeBtnStyle = `
+position: relative;
+left: 4px;
+bottom: -4px;
+color: #fff;
+background-color: #a0c4ff;
 `;
 
 export const boxStyle = `
@@ -23,10 +31,15 @@ border: 2px solid #4d9cd0;
 `;
 
 export const modalBoxStyle = `
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+z-index: 1000;
 background-color: #edece8;
-border-right: 10px solid #4d9cd0;
-border-bottom: 10px solid #4d9cd0;
+border-right: 7px solid #4d9cd0;
+border-bottom: 7px solid #4d9cd0;
 h3 {
-    font-size: 50px;
+    font-size: 35px;
   }
 `;
