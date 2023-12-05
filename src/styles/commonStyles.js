@@ -17,6 +17,14 @@ border-right: 4px solid #4d9cd0;
 border-bottom: 4px solid #4d9cd0;
 `;
 
+export const activeBtnStyle = `
+position: relative;
+left: 4px;
+bottom: -4px;
+color: #fff;
+background-color: #a0c4ff;
+`;
+
 export const boxStyle = `
 background-color: #fff;
 border: 2px solid #4d9cd0;

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { boxStyle, btnStyle } from "../../styles/commonStyles";
+import { activeBtnStyle, boxStyle, btnStyle } from "../../styles/commonStyles";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -42,6 +42,9 @@ const CreateInput = styled.div`
 const CreateBtn = styled.button`
   margin-top: 20px;
   ${btnStyle};
+  &:active {
+    ${activeBtnStyle}
+  }
 `;
 
 export default function CreateAccount() {
@@ -56,12 +59,12 @@ export default function CreateAccount() {
 
   // 중복 아이디 검사 결과 state
   // true면 검사 안했거나 이미 있는 아이디, false면 사용 가능 아이디
-  const [IdValidation, setIdValidation] = useState(true);
+  const [IdValidation, setIdValidation] = useState(false);
 
   // 계정 생성
   const onValid = async (data) => {
     try {
-      if (!IdValidation) {
+      if (IdValidation) {
         const response = await axios.post(`${HOST_URL}/auth/member`, data);
 
         console.log("계정 생성 성공: ", response.data);
@@ -79,22 +82,15 @@ export default function CreateAccount() {
     try {
       e.preventDefault();
 
-      const response = await axios.post(`${HOST_URL}/auth/check-user`, {
+      const response = await axios.post(`${HOST_URL}/auth/check-user-id`, {
         user_id: watch("user_id"),
       });
       setIdValidation(response.data.success);
-
-      if (!response.data.success) {
-        alert("사용 가능한 아이디입니다.");
-      } else {
-        alert("이미 존재하는 아이디입니다. 다른 아이디를 사용해주세요.");
-      }
+      alert(response.data.message);
     } catch (error) {
       console.error("아이디 중복 확인 실패: ", error);
     }
   };
-
-  console.log(IdValidation);
 
   return (
     <Wrapper>

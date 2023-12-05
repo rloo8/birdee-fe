@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import {
+  activeBtnStyle,
   boxStyle,
   btnStyle,
   modalBoxStyle,
@@ -103,6 +104,7 @@ const CategoryBtn = styled.button`
 const DiaryBox = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  justify-items: center;
   gap: 50px;
   padding: 80px;
   ${boxStyle}
@@ -162,6 +164,13 @@ const ModalBox = styled(motion.div)`
   button {
     width: 100%;
     ${btnStyle}
+    transition: background-color 0.2s, color 0.2s;
+    &:hover {
+      background-color: #a0c4ff;
+    }
+    &:active {
+      ${activeBtnStyle}
+    }
   }
 `;
 const Overlay = styled.div`

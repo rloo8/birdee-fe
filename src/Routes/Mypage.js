@@ -1,5 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
-import { boxStyle, btnStyle, modalBoxStyle } from "../styles/commonStyles";
+import {
+  activeBtnStyle,
+  boxStyle,
+  btnStyle,
+  modalBoxStyle,
+} from "../styles/commonStyles";
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -81,6 +86,13 @@ const ModalBox = styled(motion.div)`
     button {
       width: 100%;
       ${btnStyle}
+      transition: background-color 0.2s, color 0.2s;
+      &:hover {
+        background-color: #a0c4ff;
+      }
+      &:active {
+        ${activeBtnStyle}
+      }
     }
   }
 `;
@@ -153,7 +165,6 @@ function Mypage() {
 
   // 비밀번호 확인
   const checkPassword = async (data) => {
-    console.log(data);
     try {
       const response = await axios.post(
         `${HOST_URL}/auth/check-password`,
@@ -180,7 +191,6 @@ function Mypage() {
   };
   // 비밀번호 변경
   const updatePassword = async (data) => {
-    console.log(data);
     try {
       const response = await axios.put(
         `${HOST_URL}/auth/member/password`,

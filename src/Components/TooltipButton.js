@@ -36,6 +36,7 @@ const Tooltip = styled(motion.div)`
   font-size: 12px;
   padding: 8px;
   box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 
   &:before {
     content: "";

@@ -69,7 +69,6 @@ export default function DeletedDiary() {
         });
 
         setDeletedDiaries(response.data.data.deletedDiaries);
-        console.log(response.data.data.deletedDiaries);
       } catch (error) {
         console.error("fetch 오류:", error);
       }

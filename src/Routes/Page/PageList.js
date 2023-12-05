@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { boxStyle, btnStyle } from "../../styles/commonStyles";
+import { activeBtnStyle, boxStyle, btnStyle } from "../../styles/commonStyles";
 import MyCalendar from "../../Components/MyCalendar";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -29,6 +29,9 @@ const SideWrapper = styled.div`
 const WriteBtn = styled.button`
   width: 100%;
   ${btnStyle}
+  &:active {
+    ${activeBtnStyle}
+  }
 `;
 
 const PageWrapper = styled.div`
@@ -108,7 +111,6 @@ export default function PageList() {
             },
           }
         );
-        console.log(response.data.data.pages);
         setDiary(response.data.data);
         setPages(response.data.data.pages);
       } catch (error) {
@@ -170,7 +172,6 @@ export default function PageList() {
   // 오늘 날짜 정보
   const date = new Date();
   const today = moment(date).format("YYYY-MM-DD");
-  console.log(today);
 
   return (
     <Wrapper>
@@ -285,7 +286,6 @@ export default function PageList() {
               (user) => user.user_id === page.user_id
             );
             const boxColor = colors[userIndex];
-            console.log(diary.users);
 
             return (
               <Link
