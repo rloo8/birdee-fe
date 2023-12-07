@@ -286,7 +286,13 @@ export default function PageList() {
             const userIndex = diary.users.findIndex(
               (user) => user.user_id === page.user_id
             );
-            const boxColor = colors[userIndex];
+
+            let boxColor;
+            if (userIndex === -1) {
+              boxColor = "#ccc";
+            } else {
+              boxColor = colors[userIndex];
+            }
 
             return (
               <Link

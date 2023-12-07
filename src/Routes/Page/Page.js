@@ -246,7 +246,13 @@ export default function Page() {
       <PageWrapper>
         <PageTitle>{page.subject}</PageTitle>
         <p className="w-[100%] h-[90%] p-5 text-md focus:outline-none">
-          {page.contents}
+          {page.contents &&
+            page.contents.split("\n").map((line, index) => (
+              <span key={index}>
+                {line}
+                <br />
+              </span>
+            ))}
         </p>
       </PageWrapper>
 
